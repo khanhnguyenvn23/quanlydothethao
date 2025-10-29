@@ -58,4 +58,51 @@ public class NCC_DTO {
         this.tenNCC = tenNCC;
     }
 
+    public String getDiaChi() {
+        return diaChi;
+    }
+
+    public void setDiaChi(String diaChi) {
+        this.diaChi = diaChi;
+    }
+
+    public String getSDT() {
+        return String.valueOf(SDT);
+    }
+
+    public void setSDT(String sdt) {
+        try {
+            this.SDT = Integer.parseInt(sdt);
+        } catch (NumberFormatException e) {
+            this.SDT = 0;
+        }
+    }
+
+    public boolean isTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(boolean trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    // Constructor với String SDT để phù hợp với DAO
+    public NCC_DTO(int maNCC, String tenNCC, String diaChi, String sdt) {
+        this.maNCC = maNCC;
+        this.tenNCC = tenNCC;
+        this.diaChi = diaChi;
+        this.setSDT(sdt);
+        this.trangThai = true;
+    }
+
+    @Override
+    public String toString() {
+        return "NCC_DTO{" +
+                "maNCC=" + maNCC +
+                ", tenNCC='" + tenNCC + '\'' +
+                ", diaChi='" + diaChi + '\'' +
+                ", SDT=" + SDT +
+                ", trangThai=" + trangThai +
+                '}';
+    }
 }

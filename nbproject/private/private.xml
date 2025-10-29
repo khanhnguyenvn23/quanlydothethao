@@ -2,25 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/ChiTietPhieuNhap_DTO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/NCC_DTO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/Mau_DTO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/PhieuNhap_DTO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/GUI/login.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/GUI/common.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/ChucNang_DTO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/ChiNhanh_DTO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/ChiTietNhomQuyen_DTO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/ChiTietHoaDon_DTO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/GUI/PhieuNhap.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/GUI/home.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DAO/ConnectDatabase.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/NhomQuyen_DTO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DAO/PhieuNhap_DAO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/MGG_DTO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/HoaDon_DTO.java</file>
-            <file>file:/C:/projectjava/DesktopAppJava/DTO/KhachHang_DTO.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

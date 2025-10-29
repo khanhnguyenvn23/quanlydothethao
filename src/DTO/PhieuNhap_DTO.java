@@ -41,6 +41,9 @@ public class PhieuNhap_DTO {
     public void setMaPN(int maPN) {
         this.maPN = maPN;
     }
+    public void setMaNV(int maNV) {
+        this.maNV = maNV;
+    }
     public int getmaNV(){
         return maNV;
     }
@@ -55,6 +58,9 @@ public class PhieuNhap_DTO {
         this.tongTien = tongTien;
     }
 
+    public void setmaNCC(int maNCC ){
+        this.maNCC=maNCC;
+    }
     @Override
     public String toString() {
         return "phieunhap_DTO [MAPN=" + maPN + ", MANV=" + maNV + ", ngay=" + ngayNhap + ", tongtien=" + tongTien

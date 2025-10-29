@@ -87,4 +87,63 @@ public class NhanVien_DTO {
         this.chucVu = chucVu;
     }
 
+    public String getSDT() {
+        return String.valueOf(SDT);
+    }
+
+    public void setSDT(String sdt) {
+        try {
+            this.SDT = Integer.parseInt(sdt);
+        } catch (NumberFormatException e) {
+            this.SDT = 0;
+        }
+    }
+
+    public String getDiaChi() {
+        return diaChi;
+    }
+
+    public void setDiaChi(String diaChi) {
+        this.diaChi = diaChi;
+    }
+
+    public int getMaChiNhanh() {
+        return maCN;
+    }
+
+    public void setMaChiNhanh(int maChiNhanh) {
+        this.maCN = maChiNhanh;
+    }
+
+    public int getMaTaiKhoan() {
+        return maTK;
+    }
+
+    public void setMaTaiKhoan(int maTaiKhoan) {
+        this.maTK = maTaiKhoan;
+    }
+
+    // Constructor phù hợp với DAO
+    public NhanVien_DTO(int maNV, String hoTen, String chucVu, String diaChi, String sdt, int maChiNhanh, int maTaiKhoan) {
+        this.maNV = maNV;
+        this.hoTen = hoTen;
+        this.chucVu = chucVu;
+        this.diaChi = diaChi;
+        this.setSDT(sdt);
+        this.maCN = maChiNhanh;
+        this.maTK = maTaiKhoan;
+    }
+
+    @Override
+    public String toString() {
+        return "NhanVien_DTO{" +
+                "maNV=" + maNV +
+                ", hoTen='" + hoTen + '\'' +
+                ", chucVu='" + chucVu + '\'' +
+                ", diaChi='" + diaChi + '\'' +
+                ", SDT=" + SDT +
+                ", maChiNhanh=" + maCN +
+                ", maTaiKhoan=" + maTK +
+                '}';
+    }
 }

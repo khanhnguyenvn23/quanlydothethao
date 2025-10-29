@@ -31,19 +31,16 @@ public class PhieuNhap_DAO {
     
     public boolean insert(PhieuNhap_DTO p) {
     boolean check = false;
-    String sql = "INSERT INTO PhieuNhap (NgayNhap, MaNV, MaNCC, TongTien, TrangThaiPhu) VALUES (?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO PhieuNhap (NgayNhap, MaNCC, TongTien, TrangThaiPhu) VALUES (?, ?, ?, ?)";
 
     try (Connection con = ConnectDatabase.getconection();
          PreparedStatement pre = con.prepareStatement(sql)) {
 
        
         pre.setTimestamp(1, java.sql.Timestamp.valueOf(p.getNgayNhap()));
-
-        // 2️⃣ Gán các giá trị còn lại
-        pre.setInt(2, p.getmaNV());
-        pre.setInt(3, p.getmaNCC());
-        pre.setDouble(4, p.getTongTien());
-        pre.setBoolean(5, true); // ví dụ: true = đang hoạt động
+        pre.setInt(2, p.getmaNCC());
+        pre.setDouble(3, p.getTongTien());
+        pre.setBoolean(4, true);
 
         // 3️⃣ Thực thi câu lệnh
         check = pre.executeUpdate() > 0;
@@ -56,7 +53,7 @@ public class PhieuNhap_DAO {
 }
 public boolean delete(int mp) {
     boolean check = false;
-    String sql = "UPDATE phieunhap SET trangthai = 0 WHERE MaPhieuNhap = ?";
+    String sql = "UPDATE phieunhap SET TrangThaiPhu = 0 WHERE MaPhieuNhap = ?";
 
     try (Connection con = ConnectDatabase.getconection();
          PreparedStatement pre = con.prepareStatement(sql)) {
@@ -74,21 +71,19 @@ public boolean delete(int mp) {
 }
 public ArrayList<PhieuNhap_DTO> selectAll() {
     ArrayList<PhieuNhap_DTO> list = new ArrayList<>();
-    String sql = "SELECT MaPhieuNhap, ngaynhap, idnv, , tongtien FROM phieunhap WHERE trangthai = 1";
+    String sql = "SELECT MaPhieuNhap, NgayNhap, MaNCC, TongTien FROM PhieuNhap WHERE TrangThaiPhu = 1";
 
     try (Connection con = ConnectDatabase.getconection();
          PreparedStatement pre = con.prepareStatement(sql);
          ResultSet rs = pre.executeQuery()) {
 
         while (rs.next()) {
-            int id = rs.getInt("id");
-            // Lấy thời gian kiểu LocalDateTime
-            LocalDateTime thoigian = rs.getTimestamp("thoigian").toLocalDateTime();
-            int idnv = rs.getInt("idnv");
-            int idncc = rs.getInt("idncc");
-            double tongtien = rs.getDouble("tongtien");
+            int maPN = rs.getInt("MaPhieuNhap");
+            LocalDateTime ngayNhap = rs.getTimestamp("NgayNhap").toLocalDateTime();
+            int maNCC = rs.getInt("MaNCC");
+            double tongTien = rs.getDouble("TongTien");
 
-            PhieuNhap_DTO pn = new PhieuNhap_DTO(id, idnv, idncc, thoigian, tongtien);
+            PhieuNhap_DTO pn = new PhieuNhap_DTO(maPN, 0, maNCC, ngayNhap, tongTien);
             list.add(pn);
         }
 
@@ -98,6 +93,8 @@ public ArrayList<PhieuNhap_DTO> selectAll() {
 
     return list;
 }
+
+
 
 
 }

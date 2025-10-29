@@ -4,7 +4,11 @@
  */
 package GUI;
 
-
+import BUS.NhaCungCap_BUS;
+import BUS.NhanVien_BUS;
+import BUS.PhieuNhap_BUS;
+import BUS.PhieuNhap_BUS;
+import DTO.PhieuNhap_DTO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -12,6 +16,7 @@ import java.awt.*;
 import java.net.URL;
 
 public class PhieuNhap extends JPanel {
+    DefaultTableModel model = new DefaultTableModel();
 
     public PhieuNhap() {
         // Sử dụng BorderLayout với khoảng cách 10 pixel
@@ -88,7 +93,7 @@ public class PhieuNhap extends JPanel {
         centerPanel.add(filterPanel, BorderLayout.WEST);
 
         // Ví dụ: Thêm bảng dữ liệu vào phần CENTER (bạn có thể thay bảng mẫu này bằng bảng của bạn)
-        DefaultTableModel model = new DefaultTableModel();
+        
         model.addColumn("Mã phiếu nhập");
         model.addColumn("Nhà cung cấp");
         model.addColumn("Nhân viên nhập");
@@ -105,7 +110,7 @@ public class PhieuNhap extends JPanel {
 
         // Thêm centerPanel vào phần CENTER của giao diện chính
         add(centerPanel, BorderLayout.CENTER);
-
+             loaddatatotable();
         setVisible(true);
     }
 
@@ -225,6 +230,26 @@ public class PhieuNhap extends JPanel {
             return null;
         }
     }
+
+public void loaddatatotable(){
+     
+      model.setRowCount(0);
+        PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
+        NhanVien_BUS nvbus = new NhanVien_BUS();
+        NhaCungCap_BUS nccbus = new NhaCungCap_BUS();
+        for (PhieuNhap_DTO i : pnbus.selectall()) {
+            String[] data = new String[5];
+            data[0] = String.valueOf(i.getMaPN());
+            data[2] = nvbus.getTenNVById(i.getmaNV());
+        
+            data[1] = nccbus.getTenNCCById(i.getmaNCC());
+            data[3] = String.valueOf(i.getNgayNhap());
+            data[4] = String.valueOf(i.getTongTien());
+            model.addRow(data);
+        }
+
+}
+
     public static void main(String args[]){
         JFrame frame = new JFrame("Test Phiếu Nhập");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
