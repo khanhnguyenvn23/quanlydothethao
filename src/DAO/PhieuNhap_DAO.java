@@ -71,7 +71,7 @@ public boolean delete(int mp) {
 }
 public ArrayList<PhieuNhap_DTO> selectAll() {
     ArrayList<PhieuNhap_DTO> list = new ArrayList<>();
-    String sql = "SELECT MaPhieuNhap, NgayNhap, MaNCC, TongTien FROM PhieuNhap WHERE TrangThaiPhu = 1";
+    String sql = "SELECT MaPhieuNhap, idnv,NgayNhap, MaNCC, TongTien FROM PhieuNhap WHERE TrangThaiPhu = 1";
 
     try (Connection con = ConnectDatabase.getconection();
          PreparedStatement pre = con.prepareStatement(sql);
@@ -82,8 +82,8 @@ public ArrayList<PhieuNhap_DTO> selectAll() {
             LocalDateTime ngayNhap = rs.getTimestamp("NgayNhap").toLocalDateTime();
             int maNCC = rs.getInt("MaNCC");
             double tongTien = rs.getDouble("TongTien");
-
-            PhieuNhap_DTO pn = new PhieuNhap_DTO(maPN, 0, maNCC, ngayNhap, tongTien);
+             int idnv =rs.getInt("idnv");
+            PhieuNhap_DTO pn = new PhieuNhap_DTO(maPN, idnv , maNCC, ngayNhap, tongTien);
             list.add(pn);
         }
 

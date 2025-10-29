@@ -241,7 +241,7 @@ public void loaddatatotable(){
             String[] data = new String[5];
             data[0] = String.valueOf(i.getMaPN());
             data[2] = nvbus.getTenNVById(i.getmaNV());
-        
+            System.out.print(data[2]);
             data[1] = nccbus.getTenNCCById(i.getmaNCC());
             data[3] = String.valueOf(i.getNgayNhap());
             data[4] = String.valueOf(i.getTongTien());
