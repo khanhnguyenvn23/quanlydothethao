@@ -43,6 +43,10 @@ public class KhachHang_DTO {
         return email;
     }
 
+    public String getdiaChi(){
+        return diaChi;
+    }
+
     public void setMaKH(int maKH) {
         this.maKH = maKH;
     }
@@ -61,6 +65,9 @@ public class KhachHang_DTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    public void setDiaChi(String diaChi){
+        this.diaChi = diaChi;
     }
 
     @Override
