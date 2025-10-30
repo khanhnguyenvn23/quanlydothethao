@@ -6,7 +6,7 @@ use quanlythethao
 go
 
 -- =========================
--- 1. B?ng M„ Gi?m Gi·
+-- 1. B?ng MÔøΩ Gi?m GiÔøΩ
 -- =========================
 CREATE TABLE MaGiamGia (
     MaMGG INT IDENTITY(1,1) PRIMARY KEY,
@@ -30,7 +30,7 @@ CREATE TABLE DanhMucSanPham (
 );
 
 -- =========================
--- 3. M‡u
+-- 3. MÔøΩu
 -- =========================
 CREATE TABLE Mau (
     MaMau INT IDENTITY(1,1) PRIMARY KEY,
@@ -48,7 +48,7 @@ CREATE TABLE Size (
 );
 
 -- =========================
--- 5. Nh‡ Cung C?p
+-- 5. NhÔøΩ Cung C?p
 -- =========================
 CREATE TABLE NhaCungCap (
     MaNCC INT IDENTITY(1,1) PRIMARY KEY,
@@ -76,7 +76,7 @@ CREATE TABLE SanPham (
 );
 
 -- =========================
--- 7. S?n Ph?m Gi?m Gi·
+-- 7. S?n Ph?m Gi?m GiÔøΩ
 -- =========================
 CREATE TABLE SanPhamGiamGia (
     MaSP INT,
@@ -111,7 +111,7 @@ CREATE TABLE ChiTietPhieuNhap (
 );
 
 -- =========================
--- 10. Kh·ch H‡ng
+-- 10. KhÔøΩch HÔøΩng
 -- =========================
 CREATE TABLE KhachHang (
     MaKH INT IDENTITY(1,1) PRIMARY KEY,
@@ -124,7 +124,7 @@ CREATE TABLE KhachHang (
 );
 
 -- =========================
--- 11. HÛa ??n
+-- 11. HÔøΩa ??n
 -- =========================
 CREATE TABLE HoaDon (
     MaHD INT IDENTITY(1,1) PRIMARY KEY,
@@ -136,7 +136,7 @@ CREATE TABLE HoaDon (
 );
 
 -- =========================
--- 12. Chi Ti?t HÛa ??n
+-- 12. Chi Ti?t HÔøΩa ??n
 -- =========================
 CREATE TABLE ChiTietHoaDon (
     MaHD INT,
@@ -149,7 +149,7 @@ CREATE TABLE ChiTietHoaDon (
 );
 
 -- =========================
--- 13. Nh‚n ViÍn
+-- 13. NhÔøΩn ViÔøΩn
 -- =========================
 CREATE TABLE NhanVien (
     MaNV INT IDENTITY(1,1) PRIMARY KEY,
@@ -163,7 +163,7 @@ CREATE TABLE NhanVien (
 );
 
 -- =========================
--- 14. Chi Nh·nh
+-- 14. Chi NhÔøΩnh
 -- =========================
 CREATE TABLE ChiNhanh (
     MaChiNhanh INT IDENTITY(1,1) PRIMARY KEY,
@@ -174,7 +174,7 @@ CREATE TABLE ChiNhanh (
 );
 
 -- =========================
--- 15. T‡i Kho?n
+-- 15. TÔøΩi Kho?n
 -- =========================
 CREATE TABLE TaiKhoan (
     MaTaiKhoan INT IDENTITY(1,1) PRIMARY KEY,
@@ -187,7 +187,7 @@ CREATE TABLE TaiKhoan (
 );
 
 -- =========================
--- 16. NhÛm Quy?n
+-- 16. NhÔøΩm Quy?n
 -- =========================
 CREATE TABLE NhomQuyen (
     MaNhomQuyen INT IDENTITY(1,1) PRIMARY KEY,
@@ -205,7 +205,7 @@ CREATE TABLE ChucNang (
 );
 
 -- =========================
--- 18. Chi Ti?t NhÛm Quy?n
+-- 18. Chi Ti?t NhÔøΩm Quy?n
 -- =========================
 CREATE TABLE ChiTietNhomQuyen (
     MaNhomQuyen INT,
@@ -218,7 +218,7 @@ CREATE TABLE ChiTietNhomQuyen (
 );
 
 -- =========================
--- R‡ng bu?c khÛa ngo?i (ALTER TABLE)
+-- RÔøΩng bu?c khÔøΩa ngo?i (ALTER TABLE)
 -- =========================
 
 -- SanPham
@@ -256,3 +256,16 @@ ALTER TABLE TaiKhoan ADD CONSTRAINT FK_TK_NQ FOREIGN KEY(MaNhomQuyen) REFERENCES
 -- ChiTietNhomQuyen
 ALTER TABLE ChiTietNhomQuyen ADD CONSTRAINT FK_CTNQ_NQ FOREIGN KEY(MaNhomQuyen) REFERENCES NhomQuyen(MaNhomQuyen);
 ALTER TABLE ChiTietNhomQuyen ADD CONSTRAINT FK_CTNQ_CN FOREIGN KEY(MaChucNang) REFERENCES ChucNang(MaChucNang);
+
+ALTER TABLE phieunhap
+ADD idnv INT;
+ALTER TABLE phieunhap
+ADD CONSTRAINT FK_PhieuNhap_NhanVien
+FOREIGN KEY (idnv) REFERENCES nhanvien(MANV);
+
+--ch·ªânh thu·ªôc t√≠nh h√¨nh ·∫£nh trong database v·ªÅ th√†nh chu·ªói l∆∞u link ·∫£nh
+ALTER TABLE SanPham
+ALTER COLUMN HinhAnh NVARCHAR(255);
+
+ALTER TABLE KhachHang
+ALTER COLUMN SDT VARCHAR(15)

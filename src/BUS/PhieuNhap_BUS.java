@@ -10,8 +10,8 @@ public class PhieuNhap_BUS {
         return pndao.selectnextid();
     }
    
-    public void insert(PhieuNhap_DTO p){
-        pndao.insert(p);
+    public boolean insert(PhieuNhap_DTO p){
+        return pndao.insert(p);
     }
 
 
