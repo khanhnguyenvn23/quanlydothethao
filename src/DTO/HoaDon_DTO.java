@@ -30,6 +30,13 @@ public class HoaDon_DTO {
         return tongTien;
     }
 
+    public int getmaNV() {
+        return maNV;
+    }
+    public int getmaKH() {
+        return maKH;
+    }
+
     public void setMaHD(int maHD) {
         this.maHD = maHD;
     }

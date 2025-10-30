@@ -3,8 +3,8 @@ package DTO;
 import java.time.LocalDate;
 
 public class KhachHang_DTO {
-    private int maKH, SDT;
-    private String hoTen, email, diaChi;
+    private int maKH;
+    private String hoTen, email, diaChi,SDT;
     private LocalDate ngaySinh;
 
     public KhachHang_DTO() {
@@ -14,7 +14,7 @@ public class KhachHang_DTO {
         this.hoTen = tenKH;
     }
 
-    public KhachHang_DTO(int maKH, String hoTen, LocalDate ngaySinh, int SDT, String email, String diaChi) {
+    public KhachHang_DTO(int maKH, String hoTen, LocalDate ngaySinh, String SDT, String email, String diaChi) {
         this.maKH = maKH;
         this.hoTen = hoTen;
         this.ngaySinh = ngaySinh;
@@ -31,7 +31,7 @@ public class KhachHang_DTO {
         return hoTen;
     }
 
-    public int getSDT() {
+    public String getSDT() {
         return SDT;
     }
 
@@ -55,7 +55,7 @@ public class KhachHang_DTO {
         this.ngaySinh = ngaySinh;
     }
 
-    public void setSDT(int SDT) {
+    public void setSDT(String SDT) {
         this.SDT = SDT;
     }
 

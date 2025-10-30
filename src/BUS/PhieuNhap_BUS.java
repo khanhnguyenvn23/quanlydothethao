@@ -21,6 +21,7 @@ public class PhieuNhap_BUS {
      public boolean delete(int mp) {
         return pndao.delete(mp);
     }
+    
 public static void main(String[] args) {
         PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
 

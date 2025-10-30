@@ -2,10 +2,17 @@ package GUI;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+
 import com.toedter.calendar.JDateChooser;
 import GUI.GUITool.BorderTool;
 import GUI.GUITool.PlaceholderTextField;
 import java.awt.*;
+import java.util.ArrayList;
+
+import BUS.*;
+import DTO.*;
+import DTO.HoaDon_DTO;
 
 public class HoaDon extends JPanel {
 
@@ -189,6 +196,32 @@ public class HoaDon extends JPanel {
         editor.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         editor.setBackground(Color.WHITE);
     }
+
+    //=======================================XỮ LÝ SỰ KIỆN==========================================================================
+
+    //lấy tất cả dữ liệu của hoá đơn
+    private void loadHoaDon(){
+        String[] columnNames = {"Mã hóa đơn", "Tên khách hàng", "Tên nhân viên", "Thời gian", "Tổng số tiền"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+        table.setModel(tableModel);
+        HoaDon_BUS newHdBus = new HoaDon_BUS();
+        NhanVien_BUS newNvBus = new NhanVien_BUS();
+        KhachHang_BUS newKhBUS = new KhachHang_BUS();
+        ArrayList<HoaDon_DTO> list =newHdBus.getAllHoaDon();
+        for(HoaDon_DTO hd : list){
+             Object[] row = {
+                String.valueOf(hd.getMaHD()),
+                newKhBUS.getTenKHbyId(hd.getmaKH()),
+                newNvBus.getTenNVById(hd.getmaNV()),
+                String.valueOf(hd.getNgayLap()),
+                String.format("%,.0f VNĐ", hd.getTongTien()),
+             };
+            tableModel.addRow(row);
+        }
+    }
+
+
+
 
     // ======================= MAIN TEST =======================
     public static void main(String[] args) {
