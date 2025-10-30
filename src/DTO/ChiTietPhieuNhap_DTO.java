@@ -43,9 +43,9 @@ public class ChiTietPhieuNhap_DTO {
         return maPN;
     }
 
-    // public int getMaSP() {
-    // return maSP;
-    // }
+    public int getMaSP() {
+        return maSP;
+    }
 
     public int getSoLuongNhap() {
         return soLuongNhap;
@@ -59,18 +59,18 @@ public class ChiTietPhieuNhap_DTO {
         return thanhTien;
     }
 
-    // public String getMaSize() {
-    // return maSize;
-    // }
+    public int getMaSize() {
+        return maSize;
+    }
 
     // setter
     public void setMaPN(int maPN) {
         this.maPN = maPN;
     }
 
-    // public void setMaSP(int maSP) {
-    // this.maSP = maSP;
-    // }
+    public void setMaSP(int maSP) {
+        this.maSP = maSP;
+    }
 
     public void setSoLuongNhap(int soLuongNhap) {
         this.soLuongNhap = soLuongNhap;
@@ -84,9 +84,9 @@ public class ChiTietPhieuNhap_DTO {
         this.thanhTien = thanhTien;
     }
 
-    // public void setMaSize(String maSize) {
-    // this.maSize = maSize;
-    // }
+    public void setMaSize(int maSize) {
+        this.maSize = maSize;
+    }
     @Override
     public String toString() {
         return "ChiTietPhieuNhap [maPN = " + maPN + ", maSP = " + maSP + ", soLuong = "
