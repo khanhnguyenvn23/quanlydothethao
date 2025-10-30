@@ -10,7 +10,5 @@ public class HoaDon_BUS {
     public ArrayList<HoaDon_DTO> getAllHoaDon() {
         return hoaDon_DAO.getAllHoaDon();
     }
-    
-
     //
 }

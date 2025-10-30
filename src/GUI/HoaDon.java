@@ -33,6 +33,7 @@ public class HoaDon extends JPanel {
     public HoaDon() {
         initComponents();
         setupLayout();
+        loadHoaDon();
     }
 
     // ======================= KHỞI TẠO GIAO DIỆN =======================
