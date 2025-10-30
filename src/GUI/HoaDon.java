@@ -8,10 +8,11 @@ import com.toedter.calendar.JDateChooser;
 import GUI.GUITool.BorderTool;
 import GUI.GUITool.PlaceholderTextField;
 import java.awt.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 
 import BUS.*;
-import DTO.*;
 import DTO.HoaDon_DTO;
 
 public class HoaDon extends JPanel {
@@ -34,6 +35,7 @@ public class HoaDon extends JPanel {
         initComponents();
         setupLayout();
         loadHoaDon();
+        addEvents();
     }
 
     // ======================= KHỞI TẠO GIAO DIỆN =======================
@@ -220,6 +222,130 @@ public class HoaDon extends JPanel {
             tableModel.addRow(row);
         }
     }
+
+    //====================Các Event====================//
+    private void addEvents() {
+        btSearch.addActionListener(e -> timKiemHoaDon());
+        btnFilter.addActionListener(e -> locHoaDon());
+        btnReset.addActionListener(e -> resetForm());
+    }
+
+        //Xữ lý sự kiện Tìm tiếm
+    private void timKiemHoaDon() {
+        String loaiTimKiem = (String) cbSearch.getSelectedItem();
+        String keyword = tfSearch.getText().trim();
+        HoaDon_BUS hdBus = new HoaDon_BUS();
+
+        ArrayList<HoaDon_DTO> list = new ArrayList<>();
+
+        switch (loaiTimKiem) {
+            case "Mã hoá đơn":
+                try {
+                    int maHD = Integer.parseInt(keyword);
+                    list = hdBus.searchByMaHD(maHD);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Mã hoá đơn phải là số!");
+                    return;
+                }
+                break;
+            case "Tên nhân viên":
+                list = hdBus.searchByTenNhanVien(keyword);
+                break;
+            case "Tên khách hàng":
+                list = hdBus.searchByTenKhachHang(keyword);
+                break;
+        }
+
+        if (list.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả!");
+        } else {
+            DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+            tableModel.setRowCount(0);
+
+            NhanVien_BUS nvBus = new NhanVien_BUS();
+            KhachHang_BUS khBus = new KhachHang_BUS();
+
+            for (HoaDon_DTO hd : list) {
+                Object[] row = {
+                    hd.getMaHD(),
+                    khBus.getTenKHbyId(hd.getmaKH()),
+                    nvBus.getTenNVById(hd.getmaNV()),
+                    hd.getNgayLap(),
+                    String.format("%,.0f VNĐ", hd.getTongTien())
+                };
+                tableModel.addRow(row);
+            }
+        }
+    }
+
+    //==========================LỌC HOÁ ĐƠN================================
+    private void locHoaDon() {
+    HoaDon_BUS bus = new HoaDon_BUS();
+    ArrayList<HoaDon_DTO> list = new ArrayList<>();
+
+    try {
+        // Lấy giá trị ngày
+        LocalDateTime from = null, to = null;
+        if (dc_filterTimeFrom.getDate() != null)
+            from = dc_filterTimeFrom.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (dc_filterTimeTo.getDate() != null)
+            to = dc_filterTimeTo.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+        // Lấy giá trị tiền
+        double min = tf_filterPriceFrom.getText().isEmpty() ? 0 : Double.parseDouble(tf_filterPriceFrom.getText());
+        double max = tf_filterPriceTo.getText().isEmpty() ? Double.MAX_VALUE : Double.parseDouble(tf_filterPriceTo.getText());
+
+        // Xác định trường hợp lọc
+        if (from != null && to != null && (min > 0 || max < Double.MAX_VALUE)) {
+            list = bus.filterByDateAndTotal(from, to, min, max);
+        } else if (from != null && to != null) {
+            list = bus.filterByDate(from, to);
+        } else if (min > 0 || max < Double.MAX_VALUE) {
+            list = bus.filterByTotal(min, max);
+        } else {
+            list = bus.getAllHoaDon();
+        }
+
+        hienThiBang(list);
+
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập số hợp lệ cho khoảng tiền!");
+    }
+}
+
+private void hienThiBang(ArrayList<HoaDon_DTO> list) {
+    DefaultTableModel model = (DefaultTableModel) table.getModel();
+    model.setRowCount(0);
+
+    NhanVien_BUS nvBus = new NhanVien_BUS();
+    KhachHang_BUS khBus = new KhachHang_BUS();
+
+    for (HoaDon_DTO hd : list) {
+        Object[] row = {
+            hd.getMaHD(),
+            khBus.getTenKHbyId(hd.getmaKH()),
+            nvBus.getTenNVById(hd.getmaNV()),
+            hd.getNgayLap(),
+            String.format("%,.0f VNĐ", hd.getTongTien())
+        };
+        model.addRow(row);
+    }
+}
+
+private void resetForm() {
+    // Reset thanh tìm kiếm trên cùng
+    cbSearch.setSelectedIndex(0);
+    tfSearch.setText("");
+
+    // Reset bộ lọc bên trái
+    dc_filterTimeFrom.setDate(null);
+    dc_filterTimeTo.setDate(null);
+    tf_filterPriceFrom.setText("");
+    tf_filterPriceTo.setText("");
+
+    // Load lại toàn bộ dữ liệu hóa đơn
+    loadHoaDon();
+}
 
 
 
