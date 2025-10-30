@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 public class PhieuNhap extends JPanel {
-    DefaultTableModel model = new DefaultTableModel();
+   
  JDateChooser fromDateChooser = new JDateChooser();
 JDateChooser toDateChooser = new JDateChooser();
 JTextField minAmountField = new JTextField();
@@ -28,6 +28,15 @@ JComboBox<String> cbNCC = new JComboBox<>();
 PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
  NhanVien_BUS nvbus = new NhanVien_BUS();
  NhaCungCap_BUS nccbus = new NhaCungCap_BUS();
+ DefaultTableModel model = new DefaultTableModel() {
+    @Override
+    public boolean isCellEditable(int row, int column) {
+        return false; // tất cả các ô đều không chỉnh sửa được
+    }
+};
+   JTable table = new JTable(model);
+
+ 
     public PhieuNhap() {
         // Sử dụng BorderLayout với khoảng cách 10 pixel
         setLayout(new BorderLayout(10, 10));
@@ -109,7 +118,18 @@ tf.addFocusListener(new java.awt.event.FocusAdapter() {
         }
     }
 });
-   
+//khóa cột bảng
+ table.getTableHeader().setReorderingAllowed(false);
+
+   //=====sự kiện nút xem chi tiết======
+   btnchitiet.addActionListener(e->{
+    if(table.getSelectedRow()==-1){
+     JOptionPane.showMessageDialog(null, "Vui lòng chọn phiếu muốn xem chi tiết");
+     return; 
+    }
+    int id = Integer.parseInt(model.getValueAt(table.getSelectedRow(), 0).toString());
+     new ChiTietPhieuNhap(id);
+   });
 
    // ====== SỰ KIỆN NÚT TÌM KIẾM ======
 btnlm.addActionListener(e -> {
@@ -133,9 +153,7 @@ btnlm.addActionListener(e -> {
     model.setRowCount(0);
 
     // Lấy dữ liệu từ BUS
-    PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
-    NhanVien_BUS nvbus = new NhanVien_BUS();
-    NhaCungCap_BUS nccbus = new NhaCungCap_BUS();
+ 
 
     // Lặp qua danh sách phiếu nhập
     for (PhieuNhap_DTO i : pnbus.selectall()) {
@@ -213,7 +231,7 @@ btnlm.addActionListener(e -> {
         // Thêm một số dòng mẫu (các dòng này chỉ để minh họa)
       
 
-        JTable table = new JTable(model);
+        
         JScrollPane scrollPane = new JScrollPane(table);
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -415,7 +433,7 @@ btntimkiemnangcao.addActionListener(e -> {
 
 
 
-// ======= SỰ KIỆN TÌM KIẾM NÂNG CAO =======
+
 
 
     return leftPanel;
@@ -449,11 +467,14 @@ public void loaddatatotable(){
             data[2] = nvbus.getTenNVById(i.getmaNV());
             data[1] = nccbus.getTenNCCById(i.getmaNCC());
             data[3] = i.getNgayNhap().format(dtf);
-            data[4] = String.valueOf(i.getTongTien());
+            data[4] = String.format("%,.0f VND", i.getTongTien());
             model.addRow(data);
         }
 
 }
+
+
+
 
     public static void main(String args[]){
         JFrame frame = new JFrame("Test Phiếu Nhập");
