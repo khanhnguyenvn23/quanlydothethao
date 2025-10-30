@@ -13,6 +13,7 @@ public class HoaDon_DTO {
     public HoaDon_DTO(int maHD, int maKH, int maNV, LocalDateTime ngayLap, double tongTien) {
         this.maHD = maHD;
         this.maKH = maKH;
+        this.maNV = maNV;
         this.ngayLap = ngayLap;
         this.tongTien = tongTien;
     }

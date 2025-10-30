@@ -31,7 +31,7 @@ public class PhieuNhap_DAO {
     
     public boolean insert(PhieuNhap_DTO p) {
     boolean check = false;
-    String sql = "INSERT INTO PhieuNhap (NgayNhap, MaNCC, TongTien, TrangThaiPhu) VALUES (?, ?, ?, ?)";
+    String sql = "INSERT INTO PhieuNhap (NgayNhap, MaNCC,TongTien, TrangThaiPhu,idnv) VALUES (?, ?, ?, ?,?)";
 
     try (Connection con = ConnectDatabase.getconection();
          PreparedStatement pre = con.prepareStatement(sql)) {
@@ -41,6 +41,7 @@ public class PhieuNhap_DAO {
         pre.setInt(2, p.getmaNCC());
         pre.setDouble(3, p.getTongTien());
         pre.setBoolean(4, true);
+        pre.setInt(5, p.getmaNV());
 
         // 3️⃣ Thực thi câu lệnh
         check = pre.executeUpdate() > 0;

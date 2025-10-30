@@ -77,7 +77,7 @@ public class NhaCungCap_DAO {
              PreparedStatement pre = con.prepareStatement(sql)) {
             
             pre.setInt(1, maNCC);
-            check = pre.executeUpdate() > 0;
+           check = pre.executeUpdate() > 0;
             
         } catch (Exception e) {
             e.printStackTrace();

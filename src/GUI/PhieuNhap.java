@@ -14,10 +14,29 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 public class PhieuNhap extends JPanel {
-    DefaultTableModel model = new DefaultTableModel();
+   
+ JDateChooser fromDateChooser = new JDateChooser();
+JDateChooser toDateChooser = new JDateChooser();
+JTextField minAmountField = new JTextField();
+JTextField maxAmountField = new JTextField();
+JComboBox<String> cbNV = new JComboBox<>();
+JComboBox<String> cbNCC = new JComboBox<>();
+PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
+ NhanVien_BUS nvbus = new NhanVien_BUS();
+ NhaCungCap_BUS nccbus = new NhaCungCap_BUS();
+ DefaultTableModel model = new DefaultTableModel() {
+    @Override
+    public boolean isCellEditable(int row, int column) {
+        return false; // tất cả các ô đều không chỉnh sửa được
+    }
+};
+   JTable table = new JTable(model);
 
+ 
     public PhieuNhap() {
         // Sử dụng BorderLayout với khoảng cách 10 pixel
         setLayout(new BorderLayout(10, 10));
@@ -32,6 +51,18 @@ public class PhieuNhap extends JPanel {
         btnthem.setOpaque(false);
         btnthem.setFocusPainted(false);
         btnthem.setBorderPainted(false);
+        
+        // Thêm sự kiện cho nút Thêm
+        btnthem.addActionListener(e -> {
+            ThemPhieuNhap dialog = new ThemPhieuNhap((Frame) SwingUtilities.getWindowAncestor(this));
+            dialog.setVisible(true);
+            
+            // Nếu thêm thành công, refresh lại table
+            if (dialog.isSuccess()) {
+                loaddatatotable();
+            }
+        });
+        
         P1.add(btnthem);
 
         // Nút Chi tiết
@@ -87,8 +118,19 @@ tf.addFocusListener(new java.awt.event.FocusAdapter() {
         }
     }
 });
-   
-   // ====== SỰ KIỆN NÚT TÌM KIẾM ======
+//khóa cột bảng
+ table.getTableHeader().setReorderingAllowed(false);
+
+   //=====sự kiện nút xem chi tiết======
+   btnchitiet.addActionListener(e->{
+    if(table.getSelectedRow()==-1){
+     JOptionPane.showMessageDialog(null, "Vui lòng chọn phiếu muốn xem chi tiết");
+     return; 
+    }
+    int id = Integer.parseInt(model.getValueAt(table.getSelectedRow(), 0).toString());
+     new ChiTietPhieuNhap(id);
+   });
+
    // ====== SỰ KIỆN NÚT TÌM KIẾM ======
 btnlm.addActionListener(e -> {
     String selected = (String) pl.getSelectedItem(); // Lấy lựa chọn trong combobox
@@ -96,7 +138,7 @@ btnlm.addActionListener(e -> {
 
     // Nếu chọn "Tất Cả" thì hiển thị lại toàn bộ
     if (selected.equals("Tất Cả")) {
-        tf.setText(" ");
+        tf.setText("");
         loaddatatotable();
         return;
     }
@@ -111,9 +153,7 @@ btnlm.addActionListener(e -> {
     model.setRowCount(0);
 
     // Lấy dữ liệu từ BUS
-    PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
-    NhanVien_BUS nvbus = new NhanVien_BUS();
-    NhaCungCap_BUS nccbus = new NhaCungCap_BUS();
+ 
 
     // Lặp qua danh sách phiếu nhập
     for (PhieuNhap_DTO i : pnbus.selectall()) {
@@ -121,26 +161,32 @@ btnlm.addActionListener(e -> {
 
         switch (selected) {
             case "Mã phiếu nhập":
-                match = String.valueOf(i.getMaPN()).contains(keyword);
+                String maPN = "PN" + String.format("%03d", i.getMaPN());
+                match = maPN.toLowerCase().contains(keyword.toLowerCase());
                 break;
 
             case "Nhà cung cấp":
-                match = nccbus.getTenNCCById(i.getmaNCC()).toLowerCase().contains(keyword.toLowerCase());
+                String tenNCC = nccbus.getTenNCCById(i.getmaNCC());
+                match = tenNCC.toLowerCase().contains(keyword.toLowerCase());
                 break;
 
             case "Nhân viên nhập":
-                match = nvbus.getTenNVById(i.getmaNV()).toLowerCase().contains(keyword.toLowerCase());
+                String tenNV = nvbus.getTenNVById(i.getmaNV());
+                match = tenNV.toLowerCase().contains(keyword.toLowerCase());
                 break;
         }
 
         // Nếu khớp điều kiện → thêm vào bảng
         if (match) {
+            String tenNCC = nccbus.getTenNCCById(i.getmaNCC());
+            String tenNV = nvbus.getTenNVById(i.getmaNV());
+            
             model.addRow(new Object[]{
-                i.getMaPN(),
-                nccbus.getTenNCCById(i.getmaNCC()),
-                nvbus.getTenNVById(i.getmaNV()),
-                i.getNgayNhap(),
-                i.getTongTien()
+                "" + String.format("%d", i.getMaPN()),
+                tenNCC.isEmpty() ? "N/A" : tenNCC,
+                tenNV.isEmpty() ? "Chưa có thông tin" : tenNV,
+                i.getNgayNhap().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                String.format("%,.0f VND", i.getTongTien())
             });
         }
     }
@@ -183,10 +229,9 @@ btnlm.addActionListener(e -> {
         model.addColumn("Tổng tiền");
 
         // Thêm một số dòng mẫu (các dòng này chỉ để minh họa)
-        model.addRow(new Object[]{"PN001", "Công Ty A", "Nguyễn Văn A", "01/01/2025", "1,000,000"});
-        model.addRow(new Object[]{"PN002", "Công Ty B", "Trần Thị B", "02/01/2025", "2,000,000"});
+      
 
-        JTable table = new JTable(model);
+        
         JScrollPane scrollPane = new JScrollPane(table);
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -235,7 +280,7 @@ btnlm.addActionListener(e -> {
   
 
 // Tạo combobox và load dữ liệu từ BUS
-JComboBox<String> cbNCC = new JComboBox<>();
+
 cbNCC.addItem("Tất cả");
 NhaCungCap_BUS nccbus = new NhaCungCap_BUS();
 for (var ncc : nccbus.selectAll()) {
@@ -249,17 +294,14 @@ leftPanel.add(new JLabel("Nhân viên nhập:"), gbc);
 gbc.gridy = 3;
 
 // Tạo combobox và load dữ liệu từ BUS
-JComboBox<String> cbNV = new JComboBox<>();
+
 cbNV.addItem("Tất cả");
 NhanVien_BUS nvbus = new NhanVien_BUS();
 for (var nv : nvbus.getListNV()) {
     cbNV.addItem(nv.getHoTen());
 }
 leftPanel.add(cbNV, gbc);
-  JDateChooser fromDateChooser = new JDateChooser();
-JDateChooser toDateChooser = new JDateChooser();
-JTextField minAmountField = new JTextField();
-JTextField maxAmountField = new JTextField();
+  
 
 
 gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -309,10 +351,89 @@ leftPanel.add(maxAmountField, gbc);
     // Giới hạn chiều rộng panel
     leftPanel.setPreferredSize(new Dimension(220, 0));
 
+btntimkiemnangcao.addActionListener(e -> {
+    model.setRowCount(0); // Xóa dữ liệu cũ
+
+    String nccSelected = (String) cbNCC.getSelectedItem();
+    String nvSelected = (String) cbNV.getSelectedItem();
+    java.util.Date fromDate = fromDateChooser.getDate();
+    java.util.Date toDate = toDateChooser.getDate();
+    String minAmountText = minAmountField.getText().trim();
+    String maxAmountText = maxAmountField.getText().trim();
+
+    double minAmount = 0, maxAmount = Double.MAX_VALUE;
+    try {
+        if (!minAmountText.isEmpty()) minAmount = Double.parseDouble(minAmountText);
+        if (!maxAmountText.isEmpty()) maxAmount = Double.parseDouble(maxAmountText);
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(null, "Số tiền không hợp lệ!");
+        return;
+    }
+
+   
+    java.time.format.DateTimeFormatter dtf = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    for (PhieuNhap_DTO i : pnbus.selectall()) {
+        boolean match = true;
+
+        // Lọc theo Nhà cung cấp
+        if (!nccSelected.equals("Tất cả")) {
+            String tenNCC = nccbus.getTenNCCById(i.getmaNCC());
+            if (!tenNCC.equals(nccSelected)) {
+                match = false;
+            }
+        }
+
+        // Lọc theo Nhân viên
+        if (!nvSelected.equals("Tất cả")) {
+            String tenNV = nvbus.getTenNVById(i.getmaNV());
+            if (!tenNV.equals(nvSelected)) {
+                match = false;
+            }
+        }
+
+        // Lọc theo ngày
+        if (fromDate != null || toDate != null) {
+            java.time.LocalDate from = (fromDate != null) ? fromDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate() : null;
+            java.time.LocalDate to = (toDate != null) ? toDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate() : null;
+            java.time.LocalDate ngayNhap = i.getNgayNhap().toLocalDate();
+
+            if (from != null && ngayNhap.isBefore(from)) {
+                match = false;
+            }
+            if (to != null && ngayNhap.isAfter(to)) {
+                match = false;
+            }
+        }
+
+        // Lọc theo tổng tiền
+        double total = i.getTongTien();
+        if (total < minAmount || total > maxAmount) {
+            match = false;
+        }
+
+        if (match) {
+            String tenNCC = nccbus.getTenNCCById(i.getmaNCC());
+            String tenNV = nvbus.getTenNVById(i.getmaNV());
+            
+            model.addRow(new Object[]{
+                 String.format("%d", i.getMaPN()),
+                tenNCC.isEmpty() ? "N/A" : tenNCC,
+                tenNV.isEmpty() ? "Chưa có thông tin" : tenNV,
+                i.getNgayNhap().format(dtf),
+                String.format("%,.0f VND", total)
+            });
+        }
+    }
+
+    if (model.getRowCount() == 0) {
+        JOptionPane.showMessageDialog(null, "Không tìm thấy kết quả phù hợp!");
+    }
+});
 
 
 
-// ======= SỰ KIỆN TÌM KIẾM NÂNG CAO =======
+
 
 
     return leftPanel;
@@ -346,11 +467,14 @@ public void loaddatatotable(){
             data[2] = nvbus.getTenNVById(i.getmaNV());
             data[1] = nccbus.getTenNCCById(i.getmaNCC());
             data[3] = i.getNgayNhap().format(dtf);
-            data[4] = String.valueOf(i.getTongTien());
+            data[4] = String.format("%,.0f VND", i.getTongTien());
             model.addRow(data);
         }
 
 }
+
+
+
 
     public static void main(String args[]){
         JFrame frame = new JFrame("Test Phiếu Nhập");
