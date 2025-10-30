@@ -13,6 +13,12 @@ public class NhaCungCap_BUS {
         nccDAO = new NhaCungCap_DAO();
         listNCC = new ArrayList<>();
     }
+
+    
+    public ArrayList<NCC_DTO> selectAll() { 
+    listNCC = nccDAO.selectAll();
+    return listNCC;
+}
     
     // Lấy danh sách tất cả nhà cung cấp
     public ArrayList<NCC_DTO> getListNCC() {
@@ -26,6 +32,7 @@ public class NhaCungCap_BUS {
         if (!validateNCC(ncc)) {
             return false;
         }
+        
         
         // Kiểm tra trùng tên
         if (checkDuplicateName(ncc.getTenNCC(), -1)) {

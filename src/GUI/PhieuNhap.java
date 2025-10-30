@@ -3,10 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package GUI;
-
+import com.toedter.calendar.JDateChooser;
 import BUS.NhaCungCap_BUS;
 import BUS.NhanVien_BUS;
-import BUS.PhieuNhap_BUS;
 import BUS.PhieuNhap_BUS;
 import DTO.PhieuNhap_DTO;
 import javax.swing.*;
@@ -14,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 
 public class PhieuNhap extends JPanel {
     DefaultTableModel model = new DefaultTableModel();
@@ -51,16 +51,11 @@ public class PhieuNhap extends JPanel {
         P1.add(btnhuyphieu);
 
         // Nút Xuất Excel
-        ImageIcon xuatexcelicon = resizeimg(new ImageIcon(getClass().getResource("/icon/xuatexcel.png")));
-        JButton btnxuatexcel = createIconButton("Xuất Excel", xuatexcelicon);
-        btnxuatexcel.setOpaque(false);
-        btnxuatexcel.setFocusPainted(false);
-        btnxuatexcel.setBorderPainted(false);
-        P1.add(btnxuatexcel);
+       
 
-        // Nút Làm mới
-        ImageIcon lmcon = resizeimg(new ImageIcon(getClass().getResource("/icon/lammoi.png")));
-        JButton btnlm = createIconButton("Làm Mới", lmcon);
+        // Nút tìm kiếm
+        ImageIcon lmcon = resizeimg(new ImageIcon(getClass().getResource("/icon/loupe.png")));
+        JButton btnlm = createIconButton("tìm kiếm", lmcon);
         btnlm.setOpaque(false);
         btnlm.setFocusPainted(false);
         btnlm.setVerticalTextPosition(SwingConstants.CENTER);
@@ -68,10 +63,97 @@ public class PhieuNhap extends JPanel {
 
         // Panel chứa công cụ tìm kiếm (bên phải của thanh chức năng)
         JPanel P2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        String[] cb = {"Tất Cả", "Mã phiếu nhập", "Nhà cung cấp", "Nhân viên nhập","Xem Chi Tiết"};
+        String[] cb = {"Tất Cả", "Mã phiếu nhập", "Nhà cung cấp", "Nhân viên nhập"};
         JComboBox<String> pl = new JComboBox<>(cb);
         pl.setPreferredSize(new Dimension(100, 40));
         JTextField tf = new JTextField(20);
+        tf.setText("Nhập nội dung tìm kiếm...");
+        tf.setForeground(Color.GRAY);
+// Thêm FocusListener để xử lý placeholder
+tf.addFocusListener(new java.awt.event.FocusAdapter() {
+    @Override
+    public void focusGained(java.awt.event.FocusEvent e) {
+        if (tf.getText().equals("Nhập nội dung tìm kiếm...")) {
+            tf.setText("");
+            tf.setForeground(Color.BLACK);
+        }
+    }
+
+    @Override
+    public void focusLost(java.awt.event.FocusEvent e) {
+        if (tf.getText().isEmpty()) {
+            tf.setText("Nhập nội dung tìm kiếm...");
+            tf.setForeground(Color.GRAY);
+        }
+    }
+});
+   
+   // ====== SỰ KIỆN NÚT TÌM KIẾM ======
+   // ====== SỰ KIỆN NÚT TÌM KIẾM ======
+btnlm.addActionListener(e -> {
+    String selected = (String) pl.getSelectedItem(); // Lấy lựa chọn trong combobox
+    String keyword = tf.getText().trim();            // Lấy nội dung người dùng nhập
+
+    // Nếu chọn "Tất Cả" thì hiển thị lại toàn bộ
+    if (selected.equals("Tất Cả")) {
+        tf.setText(" ");
+        loaddatatotable();
+        return;
+    }
+
+    // Kiểm tra nhập liệu rỗng (ngoại trừ "Tất Cả")
+    if (keyword.equals("") || keyword.equals("Nhập nội dung tìm kiếm...")) {
+        JOptionPane.showMessageDialog(null, "Vui lòng nhập nội dung tìm kiếm!");
+        return;
+    }
+
+    // Xóa dữ liệu cũ
+    model.setRowCount(0);
+
+    // Lấy dữ liệu từ BUS
+    PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
+    NhanVien_BUS nvbus = new NhanVien_BUS();
+    NhaCungCap_BUS nccbus = new NhaCungCap_BUS();
+
+    // Lặp qua danh sách phiếu nhập
+    for (PhieuNhap_DTO i : pnbus.selectall()) {
+        boolean match = false;
+
+        switch (selected) {
+            case "Mã phiếu nhập":
+                match = String.valueOf(i.getMaPN()).contains(keyword);
+                break;
+
+            case "Nhà cung cấp":
+                match = nccbus.getTenNCCById(i.getmaNCC()).toLowerCase().contains(keyword.toLowerCase());
+                break;
+
+            case "Nhân viên nhập":
+                match = nvbus.getTenNVById(i.getmaNV()).toLowerCase().contains(keyword.toLowerCase());
+                break;
+        }
+
+        // Nếu khớp điều kiện → thêm vào bảng
+        if (match) {
+            model.addRow(new Object[]{
+                i.getMaPN(),
+                nccbus.getTenNCCById(i.getmaNCC()),
+                nvbus.getTenNVById(i.getmaNV()),
+                i.getNgayNhap(),
+                i.getTongTien()
+            });
+        }
+    }
+
+    // Nếu không có kết quả
+    if (model.getRowCount() == 0) {
+        JOptionPane.showMessageDialog(null, "Không tìm thấy kết quả phù hợp!");
+    }
+});
+
+
+       
+
         tf.setPreferredSize(new Dimension(100, 40));
         P2.add(pl);
         P2.add(tf);
@@ -133,89 +215,109 @@ public class PhieuNhap extends JPanel {
     }
 
     // Phương thức tạo bộ lọc tìm kiếm ở bên trái giao diện
-    private JPanel createLeftFilterPanel() {
-        JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new GridBagLayout());
-        leftPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder("Bộ lọc tìm kiếm"),
-                new EmptyBorder(5, 5, 5, 10)
-        ));
+   private JPanel createLeftFilterPanel() {
+    JPanel leftPanel = new JPanel(new GridBagLayout());
+    leftPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder("Bộ lọc tìm kiếm"),
+            new EmptyBorder(5, 5, 5, 10)
+    ));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.insets = new Insets(5, 5, 5, 5);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.gridx = 0;
 
-        // Nhà cung cấp
-        leftPanel.add(new JLabel("Nhà cung cấp:"), gbc);
-        gbc.gridy = 1;
-        gbc.weightx = 1.0;
-        JComboBox<String> cbNhaCungCap = new JComboBox<>(new String[]{
-                "Tất cả", "LouisVuitton", "Gucci","Chanel"
-        });
-        leftPanel.add(cbNhaCungCap, gbc);
-        gbc.weightx = 0;
+    // --- Nhà cung cấp ---
+    gbc.gridy = 0;
+    leftPanel.add(new JLabel("Nhà cung cấp:"), gbc);
+    gbc.gridy = 1;
+  
 
-        // Nhân viên nhập
-        gbc.gridy = 2;
-        leftPanel.add(new JLabel("Nhân viên nhập:"), gbc);
-        gbc.gridy = 3;
-        gbc.weightx = 1.0;
-        JComboBox<String> cbNhanVien = new JComboBox<>(new String[]{
-                "Tất cả", "Vũ Hồng Vĩnh Khang", "Nguyễn Văn Khanh", "Hàn Gia Hào"
-        });
-        leftPanel.add(cbNhanVien, gbc);
-        gbc.weightx = 0;
+// Tạo combobox và load dữ liệu từ BUS
+JComboBox<String> cbNCC = new JComboBox<>();
+cbNCC.addItem("Tất cả");
+NhaCungCap_BUS nccbus = new NhaCungCap_BUS();
+for (var ncc : nccbus.selectAll()) {
+    cbNCC.addItem(ncc.getTenNCC());
+}
+leftPanel.add(cbNCC, gbc);
 
-        // Từ ngày
-        gbc.gridy = 4;
-        leftPanel.add(new JLabel("Từ ngày:"), gbc);
-        gbc.gridy = 5;
-        gbc.weightx = 1.0;
-        JPanel datePanelTu = new JPanel(new BorderLayout(5, 0));
-        datePanelTu.add(new JTextField(), BorderLayout.CENTER);
-        leftPanel.add(datePanelTu, gbc);
-        gbc.weightx = 0;
+// --- Nhân viên nhập ---
+gbc.gridy = 2;
+leftPanel.add(new JLabel("Nhân viên nhập:"), gbc);
+gbc.gridy = 3;
 
-        // Đến ngày
-        gbc.gridy = 6;
-        leftPanel.add(new JLabel("Đến ngày:"), gbc);
-        gbc.gridy = 7;
-        gbc.weightx = 1.0;
-        JPanel datePanelDen = new JPanel(new BorderLayout(5, 0));
-        datePanelDen.add(new JTextField(), BorderLayout.CENTER);
-        leftPanel.add(datePanelDen, gbc);
-        gbc.weightx = 0;
+// Tạo combobox và load dữ liệu từ BUS
+JComboBox<String> cbNV = new JComboBox<>();
+cbNV.addItem("Tất cả");
+NhanVien_BUS nvbus = new NhanVien_BUS();
+for (var nv : nvbus.getListNV()) {
+    cbNV.addItem(nv.getHoTen());
+}
+leftPanel.add(cbNV, gbc);
+  JDateChooser fromDateChooser = new JDateChooser();
+JDateChooser toDateChooser = new JDateChooser();
+JTextField minAmountField = new JTextField();
+JTextField maxAmountField = new JTextField();
 
-        // Từ số tiền (VND)
-        gbc.gridy = 8;
-        leftPanel.add(new JLabel("Từ số tiền (VND):"), gbc);
-        gbc.gridy = 9;
-        gbc.weightx = 1.0;
-        leftPanel.add(new JTextField(), gbc);
-        gbc.weightx = 0;
 
-        // Đến số tiền (VND)
-        gbc.gridy = 10;
-        leftPanel.add(new JLabel("Đến số tiền (VND):"), gbc);
-        gbc.gridy = 11;
-        gbc.weightx = 1.0;
-        leftPanel.add(new JTextField(), gbc);
-        gbc.weightx = 0;
+gbc.fill = GridBagConstraints.HORIZONTAL;
+gbc.gridx = 0;
 
-        // Để trống dòng cuối, chiếm không gian dọc
-        gbc.gridy = 12;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.VERTICAL;
-        leftPanel.add(new JLabel(), gbc);
+// --- Từ ngày ---
+gbc.gridy = 4;
+leftPanel.add(new JLabel("Từ ngày:"), gbc);
+gbc.gridy = 5;
+leftPanel.add(fromDateChooser, gbc);
 
-        // Đặt kích thước ưu tiên cho bộ lọc tìm kiếm
-        leftPanel.setPreferredSize(new Dimension(220, leftPanel.getPreferredSize().height));
+// --- Đến ngày ---
+gbc.gridy = 6;
+leftPanel.add(new JLabel("Đến ngày:"), gbc);
+gbc.gridy = 7;
+leftPanel.add(toDateChooser, gbc);
 
-        return leftPanel;
-    }
+// --- Từ số tiền ---
+gbc.gridy = 8;
+leftPanel.add(new JLabel("Từ số tiền (VND):"), gbc);
+gbc.gridy = 9;
+leftPanel.add(minAmountField, gbc);
+
+// --- Đến số tiền ---
+gbc.gridy = 10;
+leftPanel.add(new JLabel("Đến số tiền (VND):"), gbc);
+gbc.gridy = 11;
+leftPanel.add(maxAmountField, gbc);
+
+    // --- Nút tìm kiếm nâng cao ---
+    gbc.gridy = 12;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.anchor = GridBagConstraints.CENTER;
+    ImageIcon timkiem2 = resizeimg(new ImageIcon(getClass().getResource("/icon/loupe.png")));
+    JButton btntimkiemnangcao = createIconButton("Tìm kiếm nâng cao", timkiem2);
+    btntimkiemnangcao.setOpaque(false);
+    btntimkiemnangcao.setFocusPainted(false);
+    btntimkiemnangcao.setBorderPainted(false);
+    leftPanel.add(btntimkiemnangcao, gbc);
+
+    // --- Dòng trống cuối cùng đẩy nhẹ mọi thứ lên ---
+    gbc.gridy = 13;
+    gbc.weighty = 1.0;
+    gbc.fill = GridBagConstraints.VERTICAL;
+    leftPanel.add(Box.createVerticalStrut(10), gbc);
+
+    // Giới hạn chiều rộng panel
+    leftPanel.setPreferredSize(new Dimension(220, 0));
+
+
+
+
+// ======= SỰ KIỆN TÌM KIẾM NÂNG CAO =======
+
+
+    return leftPanel;
+}
+
 
     // Phương thức tải icon từ đường dẫn và thay đổi kích thước (20x20)
     private ImageIcon loadIcon(String path) {
@@ -237,13 +339,13 @@ public void loaddatatotable(){
         PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
         NhanVien_BUS nvbus = new NhanVien_BUS();
         NhaCungCap_BUS nccbus = new NhaCungCap_BUS();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         for (PhieuNhap_DTO i : pnbus.selectall()) {
             String[] data = new String[5];
             data[0] = String.valueOf(i.getMaPN());
             data[2] = nvbus.getTenNVById(i.getmaNV());
-            System.out.print(data[2]);
             data[1] = nccbus.getTenNCCById(i.getmaNCC());
-            data[3] = String.valueOf(i.getNgayNhap());
+            data[3] = i.getNgayNhap().format(dtf);
             data[4] = String.valueOf(i.getTongTien());
             model.addRow(data);
         }
