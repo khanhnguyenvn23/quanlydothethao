@@ -25,7 +25,7 @@ public class PhieuNhap extends JPanel {
         // --------- PHẦN NÚT CHỨC NĂNG (TOP) -----------
         JPanel P = new JPanel(new BorderLayout());
         JPanel P1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
+        
         // Nút Thêm
         ImageIcon addIcon = resizeimg(new ImageIcon(getClass().getResource("/icon/them.png")));
         JButton btnthem = createIconButton("Thêm", addIcon);
