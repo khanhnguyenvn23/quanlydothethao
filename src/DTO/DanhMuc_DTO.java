@@ -1,65 +1,57 @@
 package DTO;
 
 public class DanhMuc_DTO {
-    private int maDM, soLuong;
+    private int maDM;
     private String tenDM;
+    private String mota;
     private boolean trangThai;
 
-    public DanhMuc_DTO(String tenDM) {
-        this.maDM = 0;
-        this.tenDM = tenDM;
-        this.trangThai = true;
-        this.soLuong = 0;
+    public DanhMuc_DTO() {
     }
 
-    public DanhMuc_DTO(int maDM, String tenDM) {
+    public DanhMuc_DTO(int maDM, String tenDM, String mota, boolean trangThai) {
         this.maDM = maDM;
         this.tenDM = tenDM;
-        this.trangThai = true;
-        this.soLuong = 0;
-    }
-
-    public DanhMuc_DTO(int maDM, String tenDM, boolean trangThai, int soLuong) {
-        this.maDM = maDM;
-        this.tenDM = tenDM;
+        this.mota = mota;
         this.trangThai = trangThai;
-        this.soLuong = soLuong;
     }
+
 
     public int getMaDM() {
-        return maDM;
-    }
-
-    public String getTenDM() {
-        return tenDM;
-    }
-
-    public boolean getTrangThai() {
-        return trangThai;
-    }
-
-    public int getSoLuong() {
-        return soLuong;
+        return this.maDM;
     }
 
     public void setMaDM(int maDM) {
         this.maDM = maDM;
     }
 
+    public String getTenDM() {
+        return this.tenDM;
+    }
+
     public void setTenDM(String tenDM) {
         this.tenDM = tenDM;
+    }
+
+    public String getMota() {
+        return this.mota;
+    }
+
+    public void setMota(String mota) {
+        this.mota = mota;
+    }
+
+    public boolean isTrangThai() {
+        return this.trangThai;
+    }
+
+    public boolean getTrangThai() {
+        return this.trangThai;
     }
 
     public void setTrangThai(boolean trangThai) {
         this.trangThai = trangThai;
     }
-
-    public void setSoLuong(int soLuong) {
-        this.soLuong = soLuong;
-    }
-
-    @Override
-    public String toString() {
-        return maDM + " " + tenDM + " " + ((trangThai == false) ? "Ngừng bán" : soLuong);
-    }
+   
+    
 }

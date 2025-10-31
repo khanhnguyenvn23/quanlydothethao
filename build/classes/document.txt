@@ -1,3 +1,0 @@
-# Tạo thư mục: mkdir <ten_thu_muc>
-# Tạo file (trong cmd): type nul > <ten_file>.<duoi_file>
-# Mở file ra code bằng cmd: code <ten_file>.<duoi_file>
