@@ -94,15 +94,8 @@ public class NCC_DTO {
         this.setSDT(sdt);
         this.trangThai = true;
     }
-
-    @Override
-    public String toString() {
-        return "NCC_DTO{" +
-                "maNCC=" + maNCC +
-                ", tenNCC='" + tenNCC + '\'' +
-                ", diaChi='" + diaChi + '\'' +
-                ", SDT=" + SDT +
-                ", trangThai=" + trangThai +
-                '}';
-    }
+@Override
+public String toString() {
+    return tenNCC; // hiển thị tên
+}
 }
