@@ -44,15 +44,15 @@ PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
         btnthem.setBorderPainted(false);
         
         // Thêm sự kiện cho nút Thêm
-        btnthem.addActionListener(e -> {
-            ThemPhieuNhap dialog = new ThemPhieuNhap((Frame) SwingUtilities.getWindowAncestor(this));
-            dialog.setVisible(true);
+        // btnthem.addActionListener(e -> {
+        //     ThemPhieuNhap dialog = new ThemPhieuNhap((Frame) SwingUtilities.getWindowAncestor(this));
+        //     dialog.setVisible(true);
             
-            // Nếu thêm thành công, refresh lại table
-            if (dialog.isSuccess()) {
-                loaddatatotable();
-            }
-        });
+        //     // Nếu thêm thành công, refresh lại table
+        //     if (dialog.isSuccess()) {
+        //         loaddatatotable();
+        //     }
+        // });
         
         P1.add(btnthem);
 
