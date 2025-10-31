@@ -3,19 +3,19 @@ package DTO;
 import java.time.LocalDateTime;
 
 public class HoaDon_DTO {
-    private int maHD, maKH, maNV, maMGG;
+    private int maHD, maKH, maNV;
     private double tongTien;
     private LocalDateTime ngayLap;
 
     public HoaDon_DTO() {
     }
 
-    public HoaDon_DTO(int maHD, int maKH, int maNV, LocalDateTime ngayLap, double tongTien, int giamGia) {
+    public HoaDon_DTO(int maHD, int maKH, int maNV, LocalDateTime ngayLap, double tongTien) {
         this.maHD = maHD;
         this.maKH = maKH;
+        this.maNV = maNV;
         this.ngayLap = ngayLap;
         this.tongTien = tongTien;
-        this.maMGG = giamGia;
     }
 
     public int getMaHD() {
@@ -28,6 +28,13 @@ public class HoaDon_DTO {
 
     public double getTongTien() {
         return tongTien;
+    }
+
+    public int getmaNV() {
+        return maNV;
+    }
+    public int getmaKH() {
+        return maKH;
     }
 
     public void setMaHD(int maHD) {

@@ -21,11 +21,12 @@ public class PhieuNhap_BUS {
      public boolean delete(int mp) {
         return pndao.delete(mp);
     }
+    
 public static void main(String[] args) {
         PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
 
         // Ví dụ: thử xoá phiếu nhập có id = 2
-        boolean kq = pnbus.delete(1);
+        boolean kq = pnbus.delete(0);
 
         if (kq) {
             System.out.println("Đã xoá phiếu nhập có mã 2 thành công.");
