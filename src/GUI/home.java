@@ -31,6 +31,7 @@ public class home extends JFrame {
         contentPanel.setLayout(cardlayout);
         
         contentPanel.add(new PhieuNhap(), "phieunhap");
+        contentPanel.add(new DanhMuc(),"danhmuc");
         contentPanel.add(new HoaDon(),"hoadon");
 
          add(menuPanel, BorderLayout.WEST);
@@ -59,9 +60,9 @@ public class home extends JFrame {
         // demo trước với chức năng phiếu nhập
         //ai muốn thêm chức năng thì viết class GUI trước rồi add vào trên constructor và hàm này
          panel.add(createMenuButton("Phiếu nhập", "phieunhap", "/icon/phieunhap.png"));
+        panel.add(createMenuButton("Loại sản phẩm", "danhmuc", "/icon/phieunhap.png"));
          panel.add(createMenuButton("Hoá đơn", "hoadon", "/icon/phieuxuat.png"));
 
-       
         return panel ;
         
     }
