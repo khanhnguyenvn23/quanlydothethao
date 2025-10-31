@@ -347,15 +347,30 @@ private void resetForm() {
     loadHoaDon();
 }
 
+private void showChiTietHoaDon(int maHD){
+
+
+    //Giao diện
+    JPanel pnChiTietHoaDon = new JPanel();
+
+    
+}
+
 
 
 
     // ======================= MAIN TEST =======================
     public static void main(String[] args) {
+        JPanel pnChiTietHoaDon = new JPanel();
+        
+
+
+
+
         JFrame frame = new JFrame("Test HoaDon - 3 Layers Ready");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 700);
-        frame.add(new HoaDon());
+        frame.add(pnChiTietHoaDon);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

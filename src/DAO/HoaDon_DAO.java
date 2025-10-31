@@ -1,5 +1,7 @@
 package DAO;
 import DTO.HoaDon_DTO;
+import DTO.SanPham_DTO;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -11,8 +13,6 @@ import java.time.LocalDateTime;
 import java.sql.Timestamp;
 
 public class HoaDon_DAO {
-
-
     //Lấy tất cả hoá đơn
     public ArrayList<HoaDon_DTO> getAllHoaDon(){
         ArrayList<HoaDon_DTO> result = new ArrayList<>();
@@ -202,7 +202,7 @@ public class HoaDon_DAO {
 
         return result;
     }
-
+    
     // ====== HÀM MAP DỮ LIỆU ======
     private HoaDon_DTO mapResultToHoaDon(ResultSet rs) throws SQLException {
         int maHD = rs.getInt("MaHD");
@@ -213,6 +213,9 @@ public class HoaDon_DAO {
 
         return new HoaDon_DTO(maHD, maKH, maNV, ngayLap, tongTien);
     }
+
+
+    
 
 
 }
