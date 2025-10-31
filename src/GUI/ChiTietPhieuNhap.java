@@ -91,6 +91,6 @@ public class ChiTietPhieuNhap extends JFrame {
         }
     }
    public static void main(String args[]){
-   ChiTietPhieuNhap ctpn= new ChiTietPhieuNhap(1);
+   ChiTietPhieuNhap ctpn= new ChiTietPhieuNhap(3);
    }
 }

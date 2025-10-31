@@ -57,15 +57,7 @@ public class SanPham_BUS {
 
     // Cập nhật số lượng tồn kho
     public boolean updateSoLuongTon(int maSP, int soLuongMoi) {
-        if (maSP <= 0) {
-            System.out.println("Mã sản phẩm không hợp lệ!");
-            return false;
-        }
-        
-        if (soLuongMoi < 0) {
-            System.out.println("Số lượng tồn kho không được âm!");
-            return false;
-        }
+      
         
         boolean result = sanPhamDAO.updateSoLuongTon(maSP, soLuongMoi);
         if (result) {
@@ -81,16 +73,7 @@ public class SanPham_BUS {
 
     // Tăng số lượng tồn kho (nhập hàng)
     public boolean nhapHang(int maSP, int soLuongNhap) {
-        if (maSP <= 0) {
-            System.out.println("Mã sản phẩm không hợp lệ!");
-            return false;
-        }
-        
-        if (soLuongNhap <= 0) {
-            System.out.println("Số lượng nhập phải lớn hơn 0!");
-            return false;
-        }
-        
+     
         // Kiểm tra sản phẩm có tồn tại không
         SanPham_DTO sp = getSanPhamById(maSP);
         if (sp == null) {
@@ -232,5 +215,11 @@ public class SanPham_BUS {
             tongSanPham, tongSoLuongTon, sanPhamHetHang, 
             sanPhamSapHetHang, tongSanPham - sanPhamHetHang - sanPhamSapHetHang
         );
+    }
+
+    public static void main(String[] args) {
+        SanPham_BUS spbusss=new SanPham_BUS();
+        
+        spbusss.updateSoLuongTon(6, 15);
     }
 }
