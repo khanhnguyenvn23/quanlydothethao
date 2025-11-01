@@ -4,9 +4,13 @@
  */
 package GUI;
 import com.toedter.calendar.JDateChooser;
+
+import BUS.ChiTietPhieuNhap_BUS;
 import BUS.NhaCungCap_BUS;
 import BUS.NhanVien_BUS;
 import BUS.PhieuNhap_BUS;
+import BUS.SanPham_BUS;
+import DTO.ChiTietPhieuNhap_DTO;
 import DTO.PhieuNhap_DTO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -25,9 +29,13 @@ JTextField minAmountField = new JTextField();
 JTextField maxAmountField = new JTextField();
 JComboBox<String> cbNV = new JComboBox<>();
 JComboBox<String> cbNCC = new JComboBox<>();
-PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
+
+ PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
  NhanVien_BUS nvbus = new NhanVien_BUS();
  NhaCungCap_BUS nccbus = new NhaCungCap_BUS();
+ SanPham_BUS spbus =new SanPham_BUS();
+ ChiTietPhieuNhap_BUS ctpnbus= new ChiTietPhieuNhap_BUS();
+ 
  DefaultTableModel model = new DefaultTableModel() {
     @Override
     public boolean isCellEditable(int row, int column) {
@@ -54,13 +62,7 @@ PhieuNhap_BUS pnbus = new PhieuNhap_BUS();
         
         // Thêm sự kiện cho nút Thêm
         btnthem.addActionListener(e -> {
-            ThemPhieuNhap dialog = new ThemPhieuNhap((Frame) SwingUtilities.getWindowAncestor(this));
-            dialog.setVisible(true);
-            
-            // Nếu thêm thành công, refresh lại table
-            if (dialog.isSuccess()) {
-                loaddatatotable();
-            }
+          
         });
         
         P1.add(btnthem);
@@ -121,6 +123,8 @@ tf.addFocusListener(new java.awt.event.FocusAdapter() {
 //khóa cột bảng
  table.getTableHeader().setReorderingAllowed(false);
 
+
+ 
    //=====sự kiện nút xem chi tiết======
    btnchitiet.addActionListener(e->{
     if(table.getSelectedRow()==-1){
@@ -130,6 +134,28 @@ tf.addFocusListener(new java.awt.event.FocusAdapter() {
     int id = Integer.parseInt(model.getValueAt(table.getSelectedRow(), 0).toString());
      new ChiTietPhieuNhap(id);
    });
+
+
+
+//===sự kiện nút hủy phiếu===
+     btnhuyphieu.addActionListener(e->{
+      if(table.getSelectedRow()==-1){
+        JOptionPane.showMessageDialog(null,"vui lòng chọn phiếu muốn hủy");
+        return;
+      }
+        int result = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn hủy không?", "Xác nhận", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+      if (result == JOptionPane.YES_OPTION) {
+       // lấy mã id phiếu để hủy
+      int idpnxoa=Integer.parseInt(model.getValueAt(table.getSelectedRow(),0 ).toString());
+    
+        for(ChiTietPhieuNhap_DTO i: ctpnbus.getChiTietByMaPhieuNhap(idpnxoa)){
+            spbus.updateSoLuongTon(i.getMaSP(),-(i.getSoLuongNhap()));
+        }
+             pnbus.delete(idpnxoa);
+     loaddatatotable();
+     JOptionPane.showMessageDialog(null, "hủy thành công, số lượng sản phẩm đã cập nhật");
+    }
+     });
 
    // ====== SỰ KIỆN NÚT TÌM KIẾM ======
 btnlm.addActionListener(e -> {

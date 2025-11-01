@@ -43,7 +43,7 @@ public class PhieuNhap_DAO {
         pre.setBoolean(4, true);
         pre.setInt(5, p.getmaNV());
 
-        // 3️⃣ Thực thi câu lệnh
+        
         check = pre.executeUpdate() > 0;
 
     } catch (Exception e) {
