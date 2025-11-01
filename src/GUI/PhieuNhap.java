@@ -62,7 +62,7 @@ JComboBox<String> cbNCC = new JComboBox<>();
         
         // Thêm sự kiện cho nút Thêm
         btnthem.addActionListener(e -> {
-          
+          new ThemPhieuNhap(3);
         });
         
         P1.add(btnthem);
