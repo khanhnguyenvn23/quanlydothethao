@@ -1,18 +1,16 @@
 package DAO;
 import DTO.HoaDon_DTO;
-import DTO.SanPham_DTO;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.sql.Timestamp;
 
 public class HoaDon_DAO {
+
     //Lấy tất cả hoá đơn
     public ArrayList<HoaDon_DTO> getAllHoaDon(){
         ArrayList<HoaDon_DTO> result = new ArrayList<>();
@@ -34,6 +32,36 @@ public class HoaDon_DAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return result;
+    }
+
+    //Lấy hoá đơn từ id
+
+    public HoaDon_DTO getHoaDonById(int id) {
+        HoaDon_DTO result = null;
+        String sql = "SELECT * FROM HoaDon WHERE MaHD = ? AND TrangThaiPhu = 1";
+
+        try (Connection con = ConnectDatabase.getconection();
+            PreparedStatement pre = con.prepareStatement(sql)) {
+
+            pre.setInt(1, id); 
+
+            try (ResultSet rs = pre.executeQuery()) {
+                if (rs.next()) {
+                    int maHD = rs.getInt("MaHD");
+                    int maKH = rs.getInt("MaKH");
+                    int maNV = rs.getInt("MaNV");
+                    double tongTien = rs.getDouble("TongTien");
+                    LocalDateTime ngayLap = rs.getObject("NgayLap", LocalDateTime.class);
+
+                    result = new HoaDon_DTO(maHD, maKH, maNV, ngayLap, tongTien);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return result;
     }
 
