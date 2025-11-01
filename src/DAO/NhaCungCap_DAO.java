@@ -138,6 +138,28 @@ public class NhaCungCap_DAO {
         return ncc;
     }
     
+
+
+public int layIdtheotenncc(String TenNCC){
+    int idncc=-1;
+    String sql= "select MaNCC from nhacungcap where TenNCC=?";
+    try(Connection con= ConnectDatabase.getconection();
+       PreparedStatement pre = con.prepareStatement(sql)){
+    
+        pre.setString(1, TenNCC);
+        ResultSet rs= pre.executeQuery();
+        if(rs.next()){
+            idncc=rs.getInt(1);
+        }
+    }
+    catch(Exception e){
+      e.printStackTrace();
+    } 
+
+    return idncc;
+
+}
+
     // Tìm kiếm nhà cung cấp theo tên
     public ArrayList<NCC_DTO> searchByName(String tenNCC) {
         ArrayList<NCC_DTO> list = new ArrayList<>();

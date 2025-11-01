@@ -60,5 +60,8 @@ public class NhaCungCap_BUS {
         
         return listTen;
     }
+    public int  layIdtheotenncc(String tenNCC){
+          return  nccDAO.layIdtheotenncc(tenNCC);
+    }
     
 }

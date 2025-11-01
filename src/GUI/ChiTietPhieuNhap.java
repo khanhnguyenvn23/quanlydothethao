@@ -47,6 +47,7 @@ public class ChiTietPhieuNhap extends JFrame {
     model.addColumn("Tên sản phẩm");
     model.addColumn("Số lượng");
     model.addColumn("Đơn giá");
+   
 
 // Set width các cột
     TableColumnModel columnModel = jt.getColumnModel();
@@ -86,7 +87,7 @@ public class ChiTietPhieuNhap extends JFrame {
             data[0] = String.valueOf(this.idpn);
             data[1] = spbus.getSanPhamById(i.getMaSP()).getTenSP();
             data[2] = String.valueOf(i.getSoLuongNhap());
-            data[3] = String.valueOf(i.getDonGianHap());
+              data[3] = String.format("%.0f", i.getDonGianHap()); 
             model.addRow(data);
         }
     }

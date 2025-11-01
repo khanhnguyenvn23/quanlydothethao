@@ -2,6 +2,8 @@ package BUS;
 
 import DAO.ChiTietPhieuNhap_DAO;
 import DTO.ChiTietPhieuNhap_DTO;
+import GUI.ChiTietPhieuNhap;
+
 import java.util.ArrayList;
 
 public class ChiTietPhieuNhap_BUS {
@@ -13,6 +15,10 @@ public class ChiTietPhieuNhap_BUS {
         listChiTietPhieuNhap = new ArrayList<>();
     }
     
+     public boolean addChiTietPhieuNhap(ChiTietPhieuNhap_DTO ctpn){
+        return chiTietPhieuNhapDAO.addChiTietPhieuNhap(ctpn);
+     }
+
     // Lấy tất cả chi tiết phiếu nhập
     public ArrayList<ChiTietPhieuNhap_DTO> getAllChiTietPhieuNhap() {
         listChiTietPhieuNhap = chiTietPhieuNhapDAO.getAllChiTietPhieuNhap();
@@ -31,21 +37,7 @@ public class ChiTietPhieuNhap_BUS {
    
    
     
-    // Tìm kiếm chi tiết phiếu nhập theo mã sản phẩm
-    public ArrayList<ChiTietPhieuNhap_DTO> searchByMaSanPham(int maSP) {
-        ArrayList<ChiTietPhieuNhap_DTO> result = new ArrayList<>();
-        
-        if (listChiTietPhieuNhap.isEmpty()) {
-            listChiTietPhieuNhap = getAllChiTietPhieuNhap();
-        }
-        
-        for (ChiTietPhieuNhap_DTO ct : listChiTietPhieuNhap) {
-            if (ct.getMaSP() == maSP) {
-                result.add(ct);
-            }
-        }
-        
-        return result;
-    }
+   
+    
   
 }

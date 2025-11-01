@@ -109,22 +109,20 @@ public class ChiTietPhieuNhap_DAO {
     }
     
    
-    // Tính tổng tiền của một phiếu nhập
-    public double getTongTienByMaPhieuNhap(int maPhieuNhap) {
+    // Xóa tất cả chi tiết của một phiếu nhập
+    public boolean deleteAllChiTietByMaPhieuNhap(int maPhieuNhap) {
         Connection con = ConnectDatabase.getconection();
-        double tongTien = 0;
+        boolean result = false;
         
         try {
-            String sql = "SELECT SUM(ThanhTien) as TongTien FROM ChiTietPhieuNhap " +
-                        "WHERE MaPhieuNhap = ? AND TrangThaiPhu = 1";
+            String sql = "UPDATE ChiTietPhieuNhap SET TrangThaiPhu = 0 " +
+                        "WHERE MaPhieuNhap = ?";
             
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setInt(1, maPhieuNhap);
             
-            ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                tongTien = rs.getDouble("TongTien");
-            }
+            int rowsAffected = pst.executeUpdate();
+            result = rowsAffected > 0;
             
         } catch (SQLException e) {
             e.printStackTrace();
@@ -132,6 +130,9 @@ public class ChiTietPhieuNhap_DAO {
             ConnectDatabase.closeconection(con);
         }
         
-        return tongTien;
+        return result;
     }
+    
+   
+    
 }

@@ -4,8 +4,8 @@ public class Size_DTO {
     private int maSize;
     private String tenSize;
 
-    public Size_DTO() {
-
+    public Size_DTO(int i) {
+            
     }
 
     public Size_DTO(int maSize, String tenSize) {
