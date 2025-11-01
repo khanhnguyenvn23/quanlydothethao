@@ -1,19 +1,32 @@
 package GUI;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 import GUI.GUITool.BorderTool;
 import GUI.GUITool.PlaceholderTextField;
 import java.awt.*;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 import BUS.*;
+import DTO.ChiNhanh_DTO;
+import DTO.ChiTietHoaDon_DTO;
 import DTO.HoaDon_DTO;
+import DTO.KhachHang_DTO;
+import DTO.NhanVien_DTO;
 
 public class HoaDon extends JPanel {
 
@@ -165,6 +178,18 @@ public class HoaDon extends JPanel {
                 return false;
             }
         };
+
+        // Căn giữa toàn bộ dữ liệu trong bảng
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        table.setDefaultRenderer(Object.class, centerRenderer);
+
+        // Căn giữa tiêu đề cột
+        DefaultTableCellRenderer headerRenderer =
+            (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
+        headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+
         table.setFillsViewportHeight(true);
         table.setAutoCreateRowSorter(true);
         table.setRowHeight(28);
@@ -178,7 +203,7 @@ public class HoaDon extends JPanel {
         scpTable = new JScrollPane(table);
         scpTable.setBackground(Color.WHITE);
         scpTable.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1)); // viền rõ hơn
-
+       
         rightMenuPanel.add(scpTable, BorderLayout.CENTER);
     }
 
@@ -228,6 +253,7 @@ public class HoaDon extends JPanel {
         btSearch.addActionListener(e -> timKiemHoaDon());
         btnFilter.addActionListener(e -> locHoaDon());
         btnReset.addActionListener(e -> resetForm());
+        btChitiet.addActionListener(e -> showChiTietHoaDon());
     }
 
         //Xữ lý sự kiện Tìm tiếm
@@ -347,30 +373,252 @@ private void resetForm() {
     loadHoaDon();
 }
 
-private void showChiTietHoaDon(int maHD){
 
-
-    //Giao diện
-    JPanel pnChiTietHoaDon = new JPanel();
-
+// Chi tiet hoa don
+private void showChiTietHoaDon(){
     
+    // Lấy hàng đã chọn nếu không có thì thoát hàm và hiện thông báo vui lòng chọn
+    int selectedRow = table.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn một hoá đơn để xem chi tiết!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Lấy mã hoá đơn
+    String maHD = table.getValueAt(selectedRow, 0).toString();
+    int maHD_int = Integer.parseInt(maHD);
+    
+    HoaDon_BUS  hdBus = new HoaDon_BUS();
+    NhanVien_BUS nvBus = new NhanVien_BUS();
+    KhachHang_BUS khBus = new KhachHang_BUS();
+    ChiNhanh_BUS cnBus = new ChiNhanh_BUS();
+    ChiTietHoaDon_BUS cthdBus = new ChiTietHoaDon_BUS();
+    SanPham_BUS spBus = new SanPham_BUS();
+
+    HoaDon_DTO hdDTO = hdBus.getHoaDonById(maHD_int);
+    NhanVien_DTO nvDTO = nvBus.getNVById(hdDTO.getmaNV());
+    KhachHang_DTO khDTO = khBus.getKHById(hdDTO.getmaKH());
+    ChiNhanh_DTO cnDTO = cnBus.getCNById(nvDTO.getMaChiNhanh());
+    ArrayList<ChiTietHoaDon_DTO> cthdDTO = cthdBus.getByMaHD(maHD_int);
+    
+    
+
+    //Tạo GUI chi tiết hoá đơn
+    // ==================== KHỞI TẠO JDialog ====================
+    JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Chi tiết hoá đơn #" + maHD, true);
+    dialog.setSize(900, 600);
+    dialog.setLocationRelativeTo(this);
+
+    JPanel ChiTietHoaDon = new JPanel();
+    JTable table;
+    JTextField txtCustomerName, txtCustomerPhone, txtCustomerAddress;
+    JTextField txtStaffName, txtStaffPhone, txtBranch;
+    JTextField txtDate, txtTotal;
+
+    ChiTietHoaDon.setLayout(new BorderLayout(15, 15));
+    ChiTietHoaDon.setBackground(Color.WHITE);
+    ChiTietHoaDon.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    // ==== Panel thông tin chung ====
+    JPanel infoPanel = new JPanel(new GridLayout(1, 2, 20, 0));
+    infoPanel.setBackground(Color.WHITE);
+
+    // ==== Thông tin khách hàng ====
+    JPanel customerPanel = new JPanel(new GridBagLayout());
+    customerPanel.setBackground(Color.WHITE);
+    customerPanel.setBorder(new TitledBorder("Thông tin khách hàng"));
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(5, 5, 5, 5);
+    gbc.anchor = GridBagConstraints.WEST;
+
+    txtCustomerName = new JTextField();
+    txtCustomerPhone = new JTextField();
+    txtCustomerAddress = new JTextField();
+
+    JTextField[] customerFields = {txtCustomerName, txtCustomerPhone, txtCustomerAddress};
+    for (JTextField f : customerFields) {
+        f.setEditable(false);
+        f.setFocusable(false);
+        f.setBackground(Color.WHITE);
+        f.setPreferredSize(new Dimension(230, 28));
+    }
+
+    //Thêm thông tin khách hàng
+    txtCustomerName.setText(khDTO.getHoTen());
+    txtCustomerPhone.setText(khDTO.getSDT());
+    txtCustomerAddress.setText(khDTO.getdiaChi());
+
+
+    gbc.gridx = 0; gbc.gridy = 0; customerPanel.add(new JLabel("Họ tên KH:"), gbc);
+    gbc.gridx = 1; customerPanel.add(txtCustomerName, gbc);
+    gbc.gridx = 0; gbc.gridy = 1; customerPanel.add(new JLabel("SĐT:"), gbc);
+    gbc.gridx = 1; customerPanel.add(txtCustomerPhone, gbc);
+    gbc.gridx = 0; gbc.gridy = 2; customerPanel.add(new JLabel("Địa chỉ:"), gbc);
+    gbc.gridx = 1; customerPanel.add(txtCustomerAddress, gbc);
+
+    // ==== Thông tin nhân viên ====
+    JPanel staffPanel = new JPanel(new GridBagLayout());
+    staffPanel.setBackground(Color.WHITE);
+    staffPanel.setBorder(new TitledBorder("Thông tin nhân viên"));
+    GridBagConstraints gbc2 = new GridBagConstraints();
+    gbc2.insets = new Insets(5, 5, 5, 5);
+    gbc2.anchor = GridBagConstraints.WEST;
+
+    txtStaffName = new JTextField();
+    txtStaffPhone = new JTextField();
+    txtBranch = new JTextField();
+
+    JTextField[] staffFields = {txtStaffName, txtStaffPhone, txtBranch};
+    for (JTextField f : staffFields) {
+        f.setEditable(false);
+        f.setFocusable(false);
+        f.setBackground(Color.WHITE);
+        f.setPreferredSize(new Dimension(230, 28));
+    }
+
+    //Thêm thông tin nhân viên
+    txtStaffName.setText(nvDTO.getHoTen());
+    txtStaffPhone.setText(nvDTO.getSDT());
+    txtBranch.setText(cnDTO.getTenCN());
+
+    gbc2.gridx = 0; gbc2.gridy = 0; staffPanel.add(new JLabel("Họ tên NV:"), gbc2);
+    gbc2.gridx = 1; staffPanel.add(txtStaffName, gbc2);
+    gbc2.gridx = 0; gbc2.gridy = 1; staffPanel.add(new JLabel("SĐT:"), gbc2);
+    gbc2.gridx = 1; staffPanel.add(txtStaffPhone, gbc2);
+    gbc2.gridx = 0; gbc2.gridy = 2; staffPanel.add(new JLabel("Chi nhánh:"), gbc2);
+    gbc2.gridx = 1; staffPanel.add(txtBranch, gbc2);
+
+    infoPanel.add(customerPanel);
+    infoPanel.add(staffPanel);
+    ChiTietHoaDon.add(infoPanel, BorderLayout.NORTH);
+
+    // ==== Bảng sản phẩm ====
+    String[] columns = {"Hình ảnh", "Tên sản phẩm", "Đơn giá (VND)", "Số lượng", "Thành tiền (VND)"};
+    DefaultTableModel model = new DefaultTableModel(columns, 0) {
+        @Override
+        public boolean isCellEditable(int row, int col) {
+            return false;
+        }
+    };
+
+    table = new JTable(model);
+    table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+    table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+    table.getTableHeader().setBackground(new Color(41, 128, 185));
+    table.getTableHeader().setForeground(Color.WHITE);
+    table.setBackground(Color.WHITE);
+    table.setFillsViewportHeight(true);
+    table.setRowHeight(65); // đủ chỗ cho hình ảnh
+    table.getColumnModel().getColumn(0).setPreferredWidth(80);
+
+    //Thêm dữ liệu
+    for(ChiTietHoaDon_DTO chitiet : cthdDTO){
+            // Tạo ImageIcon từ đường dẫn ảnh (có thể là ảnh trong thư mục dự án)
+                ImageIcon icon = null;
+            try {
+                URL imgUrl = getClass().getResource("/IMG/"+ spBus.getSanPhamById(chitiet.getMaSP()).getHinhAnh() +".png");
+                BufferedImage img = ImageIO.read(imgUrl);
+                Image scaled = img.getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                icon = new ImageIcon(scaled);
+            } catch (Exception e) {
+                BufferedImage placeholder = new BufferedImage(80, 80, BufferedImage.TYPE_INT_RGB);
+                Graphics2D g2 = placeholder.createGraphics();
+                g2.setColor(Color.LIGHT_GRAY);
+                g2.fillRect(0, 0, 80, 80);
+                g2.setColor(Color.DARK_GRAY);
+                g2.drawString("No Img", 10, 45);
+                g2.dispose();
+                icon = new ImageIcon(placeholder);
+            }
+
+            Object[] row = {
+                icon,
+                spBus.getSanPhamById(chitiet.getMaSP()).getTenSP(),
+                String.valueOf(chitiet.getDonGia()),
+                String.valueOf(chitiet.getSoLuong()),
+                String.valueOf(chitiet.getThanhTien()),
+             };
+            model.addRow(row);
+        }
+
+    // Căn giữa toàn bộ ô
+    DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+    centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+    for (int i = 0; i < table.getColumnCount(); i++) {
+        table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+    }
+
+    // Căn giữa tiêu đề cột
+    ((DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer())
+            .setHorizontalAlignment(SwingConstants.CENTER);
+
+    // Cột ảnh hiển thị ImageIcon thay vì text
+    table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            if (value instanceof ImageIcon) {
+                JLabel label = new JLabel((ImageIcon) value);
+                label.setHorizontalAlignment(JLabel.CENTER);
+                return label;
+            }
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        }
+    });
+
+    JScrollPane scrollPane = new JScrollPane(table);
+    scrollPane.getViewport().setBackground(Color.WHITE);
+    scrollPane.setBackground(Color.WHITE);
+    scrollPane.setBorder(BorderFactory.createTitledBorder("Danh sách sản phẩm"));
+    ChiTietHoaDon.add(scrollPane, BorderLayout.CENTER);
+
+    // ==== Panel dưới cùng ====
+    JPanel bottomPanel = new JPanel(new GridBagLayout());
+    bottomPanel.setBackground(Color.WHITE);
+    GridBagConstraints gbc3 = new GridBagConstraints();
+    gbc3.insets = new Insets(5, 5, 5, 5);
+    gbc3.anchor = GridBagConstraints.EAST;
+
+    JLabel lblDate = new JLabel("Ngày lập:");
+    txtDate = new JTextField(hdDTO.getNgayLap().toString());
+    txtDate.setEditable(false);
+    txtDate.setFocusable(false);
+    txtDate.setBackground(Color.WHITE);
+    txtDate.setPreferredSize(new Dimension(120, 28));
+
+    JLabel lblTotal = new JLabel("Tổng tiền:");
+    txtTotal = new JTextField(new DecimalFormat("#,### VND").format(hdDTO.getTongTien()));
+    txtTotal.setEditable(false);
+    txtTotal.setFocusable(false);
+    txtTotal.setBackground(Color.WHITE);
+    txtTotal.setPreferredSize(new Dimension(150, 28));
+    txtTotal.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    txtTotal.setHorizontalAlignment(JTextField.RIGHT);
+
+    JButton btnClose = new JButton("Đóng");
+    btnClose.setBackground(new Color(52, 152, 219)); // xanh dương nhạt
+    btnClose.setFocusPainted(false);
+    btnClose.setBorder(BorderFactory.createEmptyBorder(8, 18, 8, 18));
+    btnClose.setForeground(Color.WHITE);
+    btnClose.addActionListener(e -> dialog.dispose());
+
+    gbc3.gridx = 0; gbc3.gridy = 0; bottomPanel.add(lblDate, gbc3);
+    gbc3.gridx = 1; bottomPanel.add(txtDate, gbc3);
+    gbc3.gridx = 2; bottomPanel.add(lblTotal, gbc3);
+    gbc3.gridx = 3; bottomPanel.add(txtTotal, gbc3);
+    gbc3.gridx = 4; bottomPanel.add(btnClose, gbc3);
+
+    ChiTietHoaDon.add(bottomPanel, BorderLayout.SOUTH);  
+    dialog.setContentPane(ChiTietHoaDon);
+    dialog.setVisible(true);
 }
-
-
-
 
     // ======================= MAIN TEST =======================
     public static void main(String[] args) {
-        JPanel pnChiTietHoaDon = new JPanel();
-        
-
-
-
-
         JFrame frame = new JFrame("Test HoaDon - 3 Layers Ready");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 700);
-        frame.add(pnChiTietHoaDon);
+        frame.add(new HoaDon());
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

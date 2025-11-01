@@ -21,6 +21,12 @@ public class HoaDon_BUS {
         return hoaDon_DAO.searchByTenNhanVien(tenNV);
     }
 
+    //Lấy hoá đơn từ id
+    public HoaDon_DTO getHoaDonById(int maHD){
+        HoaDon_DAO hdDAO = new HoaDon_DAO();
+        return  hdDAO.getHoaDonById(maHD);
+    }
+
     //Tìm kiếm theo tên khách hàng
     public ArrayList<HoaDon_DTO> searchByTenKhachHang(String tenKH) {
         return hoaDon_DAO.searchByTenKhachHang(tenKH);
