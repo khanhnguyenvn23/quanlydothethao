@@ -1,5 +1,6 @@
 package GUI;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -16,6 +17,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 import BUS.*;
 import DTO.ChiNhanh_DTO;
@@ -509,33 +513,20 @@ private void showChiTietHoaDon(){
 
     //Thêm dữ liệu
     for(ChiTietHoaDon_DTO chitiet : cthdDTO){
-
-        // Tạo ImageIcon từ đường dẫn ảnh (có thể là ảnh trong thư mục dự án)
-            ImageIcon icon = null;
+            // Tạo ImageIcon từ đường dẫn ảnh (có thể là ảnh trong thư mục dự án)
+                ImageIcon icon = null;
             try {
-                String imgName = spBus.getSanPhamById(chitiet.getMaSP()).getHinhAnh() + ".jpg";
-                java.net.URL imageURL = getClass().getResource("/IMG/ao1.jpg");
-                if (imageURL != null) {
-                    Image img = new ImageIcon(imageURL).getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                    icon = new ImageIcon(img);
-                } else {
-                    // ảnh không tồn tại, tạo placeholder
-                    BufferedImage placeholder = new BufferedImage(60, 60, BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D g2 = placeholder.createGraphics();
-                    g2.setColor(Color.LIGHT_GRAY);
-                    g2.fillRect(0, 0, 60, 60);
-                    g2.setColor(Color.GRAY);
-                    g2.drawString("No Img", 5, 35);
-                    g2.dispose();
-                    icon = new ImageIcon(placeholder);
-                }
-            } catch (Exception ex) {
-               BufferedImage placeholder = new BufferedImage(60, 60, BufferedImage.TYPE_INT_ARGB);
+                URL imgUrl = getClass().getResource("/IMG/"+ spBus.getSanPhamById(chitiet.getMaSP()).getHinhAnh() +".png");
+                BufferedImage img = ImageIO.read(imgUrl);
+                Image scaled = img.getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                icon = new ImageIcon(scaled);
+            } catch (Exception e) {
+                BufferedImage placeholder = new BufferedImage(80, 80, BufferedImage.TYPE_INT_RGB);
                 Graphics2D g2 = placeholder.createGraphics();
                 g2.setColor(Color.LIGHT_GRAY);
-                g2.fillRect(0, 0, 60, 60);
-                g2.setColor(Color.GRAY);
-                g2.drawString("No Img", 5, 35);
+                g2.fillRect(0, 0, 80, 80);
+                g2.setColor(Color.DARK_GRAY);
+                g2.drawString("No Img", 10, 45);
                 g2.dispose();
                 icon = new ImageIcon(placeholder);
             }
