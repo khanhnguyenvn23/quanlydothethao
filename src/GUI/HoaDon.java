@@ -15,9 +15,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.awt.image.BufferedImage;
 
 import BUS.*;
 import DTO.ChiNhanh_DTO;
+import DTO.ChiTietHoaDon_DTO;
 import DTO.HoaDon_DTO;
 import DTO.KhachHang_DTO;
 import DTO.NhanVien_DTO;
@@ -386,11 +388,16 @@ private void showChiTietHoaDon(){
     NhanVien_BUS nvBus = new NhanVien_BUS();
     KhachHang_BUS khBus = new KhachHang_BUS();
     ChiNhanh_BUS cnBus = new ChiNhanh_BUS();
+    ChiTietHoaDon_BUS cthdBus = new ChiTietHoaDon_BUS();
+    SanPham_BUS spBus = new SanPham_BUS();
 
     HoaDon_DTO hdDTO = hdBus.getHoaDonById(maHD_int);
     NhanVien_DTO nvDTO = nvBus.getNVById(hdDTO.getmaNV());
     KhachHang_DTO khDTO = khBus.getKHById(hdDTO.getmaKH());
     ChiNhanh_DTO cnDTO = cnBus.getCNById(nvDTO.getMaChiNhanh());
+    ArrayList<ChiTietHoaDon_DTO> cthdDTO = cthdBus.getByMaHD(maHD_int);
+    
+    
 
     //Tạo GUI chi tiết hoá đơn
     // ==================== KHỞI TẠO JDialog ====================
@@ -495,9 +502,53 @@ private void showChiTietHoaDon(){
     table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
     table.getTableHeader().setBackground(new Color(41, 128, 185));
     table.getTableHeader().setForeground(Color.WHITE);
-    table.setRowHeight(28);
     table.setBackground(Color.WHITE);
     table.setFillsViewportHeight(true);
+    table.setRowHeight(65); // đủ chỗ cho hình ảnh
+    table.getColumnModel().getColumn(0).setPreferredWidth(80);
+
+    //Thêm dữ liệu
+    for(ChiTietHoaDon_DTO chitiet : cthdDTO){
+
+        // Tạo ImageIcon từ đường dẫn ảnh (có thể là ảnh trong thư mục dự án)
+            ImageIcon icon = null;
+            try {
+                String imgName = spBus.getSanPhamById(chitiet.getMaSP()).getHinhAnh() + ".jpg";
+                java.net.URL imageURL = getClass().getResource("/IMG/ao1.jpg");
+                if (imageURL != null) {
+                    Image img = new ImageIcon(imageURL).getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                    icon = new ImageIcon(img);
+                } else {
+                    // ảnh không tồn tại, tạo placeholder
+                    BufferedImage placeholder = new BufferedImage(60, 60, BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g2 = placeholder.createGraphics();
+                    g2.setColor(Color.LIGHT_GRAY);
+                    g2.fillRect(0, 0, 60, 60);
+                    g2.setColor(Color.GRAY);
+                    g2.drawString("No Img", 5, 35);
+                    g2.dispose();
+                    icon = new ImageIcon(placeholder);
+                }
+            } catch (Exception ex) {
+               BufferedImage placeholder = new BufferedImage(60, 60, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2 = placeholder.createGraphics();
+                g2.setColor(Color.LIGHT_GRAY);
+                g2.fillRect(0, 0, 60, 60);
+                g2.setColor(Color.GRAY);
+                g2.drawString("No Img", 5, 35);
+                g2.dispose();
+                icon = new ImageIcon(placeholder);
+            }
+
+            Object[] row = {
+                icon,
+                spBus.getSanPhamById(chitiet.getMaSP()).getTenSP(),
+                String.valueOf(chitiet.getDonGia()),
+                String.valueOf(chitiet.getSoLuong()),
+                String.valueOf(chitiet.getThanhTien()),
+             };
+            model.addRow(row);
+        }
 
     // Căn giữa toàn bộ ô
     DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -509,6 +560,20 @@ private void showChiTietHoaDon(){
     // Căn giữa tiêu đề cột
     ((DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer())
             .setHorizontalAlignment(SwingConstants.CENTER);
+
+    // Cột ảnh hiển thị ImageIcon thay vì text
+    table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            if (value instanceof ImageIcon) {
+                JLabel label = new JLabel((ImageIcon) value);
+                label.setHorizontalAlignment(JLabel.CENTER);
+                return label;
+            }
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        }
+    });
 
     JScrollPane scrollPane = new JScrollPane(table);
     scrollPane.getViewport().setBackground(Color.WHITE);
@@ -524,14 +589,14 @@ private void showChiTietHoaDon(){
     gbc3.anchor = GridBagConstraints.EAST;
 
     JLabel lblDate = new JLabel("Ngày lập:");
-    txtDate = new JTextField(LocalDate.now().toString());
+    txtDate = new JTextField(hdDTO.getNgayLap().toString());
     txtDate.setEditable(false);
     txtDate.setFocusable(false);
     txtDate.setBackground(Color.WHITE);
     txtDate.setPreferredSize(new Dimension(120, 28));
 
     JLabel lblTotal = new JLabel("Tổng tiền:");
-    txtTotal = new JTextField(new DecimalFormat("#,### VND").format(0));
+    txtTotal = new JTextField(new DecimalFormat("#,### VND").format(hdDTO.getTongTien()));
     txtTotal.setEditable(false);
     txtTotal.setFocusable(false);
     txtTotal.setBackground(Color.WHITE);
@@ -544,9 +609,7 @@ private void showChiTietHoaDon(){
     btnClose.setFocusPainted(false);
     btnClose.setBorder(BorderFactory.createEmptyBorder(8, 18, 8, 18));
     btnClose.setForeground(Color.WHITE);
-    btnClose.addActionListener(e -> {
-        SwingUtilities.getWindowAncestor(this).dispose();
-    });
+    btnClose.addActionListener(e -> dialog.dispose());
 
     gbc3.gridx = 0; gbc3.gridy = 0; bottomPanel.add(lblDate, gbc3);
     gbc3.gridx = 1; bottomPanel.add(txtDate, gbc3);
@@ -570,114 +633,3 @@ private void showChiTietHoaDon(){
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
