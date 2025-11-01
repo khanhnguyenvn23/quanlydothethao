@@ -17,7 +17,10 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 
 import BUS.*;
+import DTO.ChiNhanh_DTO;
 import DTO.HoaDon_DTO;
+import DTO.KhachHang_DTO;
+import DTO.NhanVien_DTO;
 
 public class HoaDon extends JPanel {
 
@@ -365,6 +368,7 @@ private void resetForm() {
 }
 
 
+// Chi tiet hoa don
 private void showChiTietHoaDon(){
     
     // Lấy hàng đã chọn nếu không có thì thoát hàm và hiện thông báo vui lòng chọn
@@ -376,7 +380,17 @@ private void showChiTietHoaDon(){
 
     // Lấy mã hoá đơn
     String maHD = table.getValueAt(selectedRow, 0).toString();
+    int maHD_int = Integer.parseInt(maHD);
+    
+    HoaDon_BUS  hdBus = new HoaDon_BUS();
+    NhanVien_BUS nvBus = new NhanVien_BUS();
+    KhachHang_BUS khBus = new KhachHang_BUS();
+    ChiNhanh_BUS cnBus = new ChiNhanh_BUS();
 
+    HoaDon_DTO hdDTO = hdBus.getHoaDonById(maHD_int);
+    NhanVien_DTO nvDTO = nvBus.getNVById(hdDTO.getmaNV());
+    KhachHang_DTO khDTO = khBus.getKHById(hdDTO.getmaKH());
+    ChiNhanh_DTO cnDTO = cnBus.getCNById(nvDTO.getMaChiNhanh());
 
     //Tạo GUI chi tiết hoá đơn
     // ==================== KHỞI TẠO JDialog ====================
@@ -418,6 +432,12 @@ private void showChiTietHoaDon(){
         f.setPreferredSize(new Dimension(230, 28));
     }
 
+    //Thêm thông tin khách hàng
+    txtCustomerName.setText(khDTO.getHoTen());
+    txtCustomerPhone.setText(khDTO.getSDT());
+    txtCustomerAddress.setText(khDTO.getdiaChi());
+
+
     gbc.gridx = 0; gbc.gridy = 0; customerPanel.add(new JLabel("Họ tên KH:"), gbc);
     gbc.gridx = 1; customerPanel.add(txtCustomerName, gbc);
     gbc.gridx = 0; gbc.gridy = 1; customerPanel.add(new JLabel("SĐT:"), gbc);
@@ -444,6 +464,11 @@ private void showChiTietHoaDon(){
         f.setBackground(Color.WHITE);
         f.setPreferredSize(new Dimension(230, 28));
     }
+
+    //Thêm thông tin nhân viên
+    txtStaffName.setText(nvDTO.getHoTen());
+    txtStaffPhone.setText(nvDTO.getSDT());
+    txtBranch.setText(cnDTO.getTenCN());
 
     gbc2.gridx = 0; gbc2.gridy = 0; staffPanel.add(new JLabel("Họ tên NV:"), gbc2);
     gbc2.gridx = 1; staffPanel.add(txtStaffName, gbc2);
@@ -533,9 +558,6 @@ private void showChiTietHoaDon(){
     dialog.setContentPane(ChiTietHoaDon);
     dialog.setVisible(true);
 }
-
-
-
 
     // ======================= MAIN TEST =======================
     public static void main(String[] args) {

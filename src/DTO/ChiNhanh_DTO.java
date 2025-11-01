@@ -1,13 +1,13 @@
 package DTO;
 
 public class ChiNhanh_DTO {
-    private int maCN, SDT;
-    private String tenCN, diaChi;
+    private int maCN;
+    private String tenCN, diaChi, SDT;
 
     public ChiNhanh_DTO() {
     }
 
-    public ChiNhanh_DTO(int maCN, String tenCN, int SDT, String diaChi) {
+    public ChiNhanh_DTO(int maCN, String tenCN, String SDT, String diaChi) {
         this.maCN = maCN;
         this.tenCN = tenCN;
         this.SDT = SDT;
@@ -18,7 +18,7 @@ public class ChiNhanh_DTO {
         return maCN;
     }
 
-    public int getSDT() {
+    public String getSDT() {
         return SDT;
     }
 
@@ -34,7 +34,7 @@ public class ChiNhanh_DTO {
         this.maCN = maCN;
     }
 
-    public void setSDT(int SDT) {
+    public void setSDT(String SDT) {
         this.SDT = SDT;
     }
 
